@@ -13,23 +13,49 @@
  *******************************************************************************
  */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __INS_TASK_H
-#define __INS_TASK_H
+#ifndef __INS_H
+#define __INS_H
 
 #ifdef __cplusplus
 
 /* Includes ------------------------------------------------------------------*/
-#include "bmi088_driver.h"
-#include "quaternion_ekf.h"
-#include "stdint.h"
+
 
 /* Exported macro ------------------------------------------------------------*/
+
 /* Exported constants --------------------------------------------------------*/
-#define X 0//对应Pitch
-#define Y 1//对应Roll
-#define Z 2//对应Yaw
+
+/* Exported types ------------------------------------------------------------*/
+
+/* Exported variables --------------------------------------------------------*/
+/* Exported function prototypes ----------------------------------------------*/
+// extern INS_t INS;
+
+void IMU_Temperature_Ctrl(void);
+
+void QuaternionUpdate(float *q, float gx, float gy, float gz, float dt);
+void QuaternionToEularAngle(float *q, float *Yaw, float *Pitch, float *Roll);
+void EularAngleToQuaternion(float Yaw, float Pitch, float Roll, float *q);
+void BodyFrameToEarthFrame(const float *vecBF, float *vecEF, float *q);
+void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q);
+
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#define PITCH_AXIS 0 //对应Pitch
+#define ROLL_AXIS 1 //对应Roll
+#define YAW_AXIS 2 //对应Yaw
 
 #define INS_TASK_PERIOD 1
+
+/* Exported macro ------------------------------------------------------------*/
+
+/* Exported constants --------------------------------------------------------*/
+
 
 /* Exported types ------------------------------------------------------------*/
 typedef struct
@@ -73,27 +99,6 @@ typedef struct
 /* Exported variables --------------------------------------------------------*/
 /* Exported function prototypes ----------------------------------------------*/
 extern INS_t INS;
-
-void IMU_Temperature_Ctrl(void);
-
-void QuaternionUpdate(float *q, float gx, float gy, float gz, float dt);
-void QuaternionToEularAngle(float *q, float *Yaw, float *Pitch, float *Roll);
-void EularAngleToQuaternion(float Yaw, float Pitch, float Roll, float *q);
-void BodyFrameToEarthFrame(const float *vecBF, float *vecEF, float *q);
-void EarthFrameToBodyFrame(const float *vecEF, float *vecBF, float *q);
-
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* Includes ------------------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported variables --------------------------------------------------------*/
-/* Exported function prototypes ----------------------------------------------*/
 void INS_Init(void);
 void INS_Task(void);
 
@@ -101,4 +106,4 @@ void INS_Task(void);
 }
 #endif
 
-#endif /* __INS_TASK_H */
+#endif /* __INS_H */

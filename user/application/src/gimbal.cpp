@@ -60,8 +60,8 @@ void Gimbal::Control()
     speed_[0].SetRef(angle_[0].Calculate());
     speed_[1].SetRef(angle_[1].Calculate());
 
-    speed_[0].SetMeasure(INS.Gyro[Y]);//速度测量值为陀螺仪角速度，而不是电机速度
-    speed_[1].SetMeasure(INS.Gyro[Z]);
+    speed_[0].SetMeasure(INS.Gyro[ROLL_AXIS]);//速度测量值为陀螺仪角速度，而不是电机速度
+    speed_[1].SetMeasure(INS.Gyro[YAW_AXIS]);
 
     output_speed_[0] = speed_[0].Calculate();
     output_speed_[1] = speed_[1].Calculate();

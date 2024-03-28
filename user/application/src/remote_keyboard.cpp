@@ -24,8 +24,10 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+uint8_t trigger_flag;// 拨弹盘开关控制
+uint8_t fric_flag; // 摩擦轮状态标志
+uint8_t shoot_mode;// 射击模式标志
 PidsetModeID controlmode_pidset_flag = remote_pid_flag;  // 针对遥控器，键鼠与自瞄三种控制模式设置三套相适应枚举类型PID参数
-
 PidSwitchMode pitchpid_switchflag = base_pid, yawpid_switchflag = base_pid;  // 针对不同控制模式，在同一电机执行不同任务时，设置不同的PID参数
 /* External variables --------------------------------------------------------*/
 extern uint8_t remote_key_press[16];
@@ -44,7 +46,7 @@ void ModeTask()
     /*遥控器控制模式选择*/
     // 右拨杆在上，遥控器控制模式
     if (remote.GetS2() == 1) {
-        /*不连续射击控制,需要使用时取消注释，并注释其它代码该if指令其它代码*/
+        /*单发模式控制,需要使用时取消注释，并注释其它代码该if指令其它代码*/
         // RemoteDisconShootCtrl();
         // PidFlagInit(remote_pid_flag);
         // // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
@@ -76,9 +78,14 @@ void ModeTask()
         // }
         // PidSetSwitch();
         // RemoteControlMode();
+        // fric_flag=1;
+        // shoot_mode = 0;
+
 
         // 左拨杆在上或中，遥控器手控模式 OR 左拨杆在下，遥控器切换到自瞄模式
         if (remote.GetS1() == 1 || remote.GetS1() == 3) {
+            fric_flag=1;
+            shoot_mode = 1;
             PidFlagInit(remote_pid_flag);
             // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
             if (gimbal.angle_[0].GetMeasure() < 0.5) {
@@ -110,6 +117,8 @@ void ModeTask()
             PidSetSwitch();
             RemoteControlMode();
         } else {
+            fric_flag=1;
+            shoot_mode = 1;
             PidFlagInit(autoaim_pid_flag);
             PidSetSwitch();
             AutoControlMode();
@@ -120,6 +129,8 @@ void ModeTask()
     if (remote.GetS2() == 3) {
         // 当启用空中支援且有剩余发弹时间(默认向下取整0.9==0）时才能用键鼠模式控制，否则为全停模式
         if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
+            fric_flag=1;
+            shoot_mode = 1;
             // 当键盘R键按下期间，键鼠模式切换到自瞄模式，松开换回键鼠手控模式
             if (remote_key_press[KEY_R] || referee_key_press[KEY_R] == 1) {
                 PidFlagInit(autoaim_pid_flag);
@@ -157,6 +168,8 @@ void ModeTask()
                 KeymouseControlMode();
             }
         } else {
+            fric_flag=0;
+            shoot_mode = 0;
             PidFlagInit(remote_pid_flag);
             PidSetSwitch();
             GimbalStop2ControlMode();
@@ -165,6 +178,8 @@ void ModeTask()
 
     // 右拨杆在下，急停模式
     if (remote.GetS2() == 2) {
+        fric_flag=0;
+        shoot_mode = 0;
         // 左拨杆在上或中，发弹急停 OR 左拨杆在下，切换到全停模式（拨弹盘，摩擦轮目标速度设为0，双轴目标位置设为0度）
         if (remote.GetS1() == 1 || remote.GetS1() == 3) {
             PidFlagInit(remote_pid_flag);
@@ -330,18 +345,16 @@ void PidSetSwitch()
  */
 void RemoteDisconShootCtrl()
 {
-    static uint8_t flag = 0;
     if (remote.GetS1() == 1) {
-        flag = 1;
+        trigger_flag = 0;
         shoot.SetFlag(ANGLE_FLAG);
         shoot.SetTriggerPos(0.0f);
     }
 
-    if (remote.GetS1() == 3 && flag == 1) {
-        flag = 1;
+    if (remote.GetS1() == 3 && trigger_flag == 0) {
         shoot.SetFlag(ANGLE_FLAG);
         shoot.SetTriggerPos(45 * 36.0f);
-        flag = 0;
+        trigger_flag = 1;
     }
     if (remote.GetS1() == 2) {
         shoot.SetFlag(SPEED_FLAG);
