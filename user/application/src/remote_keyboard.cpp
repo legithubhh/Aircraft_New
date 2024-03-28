@@ -17,16 +17,19 @@
 
 #include "gimbal.h"
 #include "motor_pidmodify.h"
+#include "referee.h"
 #include "remote.h"
 #include "shoot.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* External variables --------------------------------------------------------*/
 PidsetModeID controlmode_pidset_flag = remote_pid_flag;  // 针对遥控器，键鼠与自瞄三种控制模式设置三套相适应枚举类型PID参数
 
 PidSwitchMode pitchpid_switchflag = base_pid, yawpid_switchflag = base_pid;  // 针对不同控制模式，在同一电机执行不同任务时，设置不同的PID参数
+/* External variables --------------------------------------------------------*/
+extern uint8_t remote_key_press[16];
+extern uint8_t referee_key_press[16];
 /* Private function prototypes -----------------------------------------------*/
 void MotorOffset();
 void PidFlagInit(PidsetModeID pidsetmode);
@@ -115,41 +118,48 @@ void ModeTask()
 
     // 右拨杆在中，键鼠模式
     if (remote.GetS2() == 3) {
-        // 当键盘R键按下期间，键鼠模式切换到自瞄模式，（松开换回键鼠手控模式？）
-        if (remote.GetPressR() == 1) {
-            PidFlagInit(autoaim_pid_flag);
-            PidSetSwitch();
-            AutoControlMode();
-        } else {
-            PidFlagInit(keymouse_pid_flag);
-            if (gimbal.angle_[0].GetMeasure() < 0.5) {
-                if (gimbal.angle_[0].GetError() > 2.5f || gimbal.angle_[0].GetError() < -2.5f) {
-                    pitchpid_switchflag = base_pid;
-                } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
-                    pitchpid_switchflag = pitch1_pid;
-                } else {
-                    pitchpid_switchflag = pitch2_pid;
-                }
+        // 当启用空中支援且有剩余发弹时间(默认向下取整0.9==0）时才能用键鼠模式控制，否则为全停模式
+        if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
+            // 当键盘R键按下期间，键鼠模式切换到自瞄模式，松开换回键鼠手控模式
+            if (remote_key_press[KEY_R] || referee_key_press[KEY_R] == 1) {
+                PidFlagInit(autoaim_pid_flag);
+                PidSetSwitch();
+                AutoControlMode();
             } else {
-                if (gimbal.angle_[0].GetError() > 3.5f || gimbal.angle_[0].GetError() < -3.5f) {
-                    pitchpid_switchflag = pitch3_pid;
-                } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
-                    pitchpid_switchflag = pitch4_pid;
+                PidFlagInit(keymouse_pid_flag);
+                if (gimbal.angle_[0].GetMeasure() < 0.5) {
+                    if (gimbal.angle_[0].GetError() > 2.5f || gimbal.angle_[0].GetError() < -2.5f) {
+                        pitchpid_switchflag = base_pid;
+                    } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
+                        pitchpid_switchflag = pitch1_pid;
+                    } else {
+                        pitchpid_switchflag = pitch2_pid;
+                    }
                 } else {
-                    pitchpid_switchflag = pitch5_pid;
+                    if (gimbal.angle_[0].GetError() > 3.5f || gimbal.angle_[0].GetError() < -3.5f) {
+                        pitchpid_switchflag = pitch3_pid;
+                    } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
+                        pitchpid_switchflag = pitch4_pid;
+                    } else {
+                        pitchpid_switchflag = pitch5_pid;
+                    }
                 }
-            }
 
-            // 当Yaw轴误差达到一定范围时，更改PID参数进行自适应调节
-            if (gimbal.angle_[1].GetError() > 15.f || gimbal.angle_[1].GetError() < -15.f) {
-                yawpid_switchflag = base_pid;
-            } else if (gimbal.angle_[1].GetError() > 1.5f || gimbal.angle_[1].GetError() < -1.5f) {
-                yawpid_switchflag = yaw1_pid;
-            } else {
-                yawpid_switchflag = yaw2_pid;
+                // 当Yaw轴误差达到一定范围时，更改PID参数进行自适应调节
+                if (gimbal.angle_[1].GetError() > 15.f || gimbal.angle_[1].GetError() < -15.f) {
+                    yawpid_switchflag = base_pid;
+                } else if (gimbal.angle_[1].GetError() > 1.5f || gimbal.angle_[1].GetError() < -1.5f) {
+                    yawpid_switchflag = yaw1_pid;
+                } else {
+                    yawpid_switchflag = yaw2_pid;
+                }
+                PidSetSwitch();
+                KeymouseControlMode();
             }
+        } else {
+            PidFlagInit(remote_pid_flag);
             PidSetSwitch();
-            KeymouseControlMode();
+            GimbalStop2ControlMode();
         }
     }
 

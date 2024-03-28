@@ -20,6 +20,7 @@
 #include "remote.h"
 #include "remote_keyboard.h"
 #include "shoot.h"
+#include "referee.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -33,6 +34,7 @@ void CANC6020IdSet();
 void InfantrySystemInit()
 {
     RemoteControlInit(&huart3);
+    referee.Init(&huart6);
     gimbal.MotorInit();
     shoot.MotorInit();
 }

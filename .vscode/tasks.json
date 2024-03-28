@@ -21,11 +21,29 @@
         },
         {
             "type": "shell",
+            "label": "STLink Download",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "interface/stlink.cfg",
+                "-f",
+                "target/stm32f4x.cfg",
+                "-c",
+                "program build/EC_C_Board.elf verify reset exit"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "JLink Download",
             "command": "JFlash",
             "args": [
-                "-openprj'C_Board.jflash'",
-                "-open'build/EC_C_board.hex',0x8000000",
+                "-openprj'EC_C_Board.jflash'",
+                "-open'build/EC_C_Board.hex',0x8000000",
                 "-auto",
                 "-startapp",
                 "-exit"

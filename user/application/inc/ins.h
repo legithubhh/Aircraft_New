@@ -25,9 +25,9 @@
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define X 0
-#define Y 1
-#define Z 2
+#define X 0//对应Pitch
+#define Y 1//对应Roll
+#define Z 2//对应Yaw
 
 #define INS_TASK_PERIOD 1
 
@@ -36,7 +36,7 @@ typedef struct
 {
     float q[4];  // 四元数估计值
 
-    float Gyro[3];  // 角速度
+    float Gyro[3];  // 角速度,0:Pitch,1:Roll,2:Yaw
     float dGyro[3];
     float Accel[3];          // 加速度
     float MotionAccel_b[3];  // 机体坐标加速度

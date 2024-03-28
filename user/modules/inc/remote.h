@@ -23,6 +23,26 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 
+// 键鼠顺序，从W到B依次对应keyboard_value的0-15位
+typedef enum {
+    KEY_W = 0,
+    KEY_S,
+    KEY_A,
+    KEY_D,
+    KEY_SHIFT,
+    KEY_CTRL,
+    KEY_Q,
+    KEY_E,
+    KEY_R,
+    KEY_F,
+    KEY_G,
+    KEY_Z,
+    KEY_X,
+    KEY_C,
+    KEY_V,
+    KEY_B,
+} KeyMouseSequence;
+
 struct DR16DatePack_t {
     int16_t ch0;
     int16_t ch1;
@@ -43,6 +63,7 @@ class Remote_t
    public:
     UartInstance *premote_instance;
     void SbusToRc(uint8_t *_pdata);
+    void KeyProcessRemote();
 
     int GetCh0()
     {
@@ -88,11 +109,13 @@ class Remote_t
     {
         return Pack_.press_r;
     }
+
    private:
     DR16DatePack_t Pack_;
 };
 /* Exported variables --------------------------------------------------------*/
 extern Remote_t remote;
+extern uint8_t remote_key_press[16];
 /* Exported function prototypes ----------------------------------------------*/
 void RemoteControlInit(UART_HandleTypeDef *_phuart);
 #endif

@@ -54,13 +54,13 @@ void Gimbal::MotorInit()
  */
 void Gimbal::Control()
 {
-    angle_[0].SetMeasure(INS.Pitch);
+    angle_[0].SetMeasure(INS.Roll);//根据安装位置，数据Roll对应实际Pitch轴
     angle_[1].SetMeasure(INS.YawTotalAngle);
 
     speed_[0].SetRef(angle_[0].Calculate());
     speed_[1].SetRef(angle_[1].Calculate());
 
-    speed_[0].SetMeasure(INS.Gyro[X]);//速度测量值为陀螺仪角速度，而不是电机速度
+    speed_[0].SetMeasure(INS.Gyro[Y]);//速度测量值为陀螺仪角速度，而不是电机速度
     speed_[1].SetMeasure(INS.Gyro[Z]);
 
     output_speed_[0] = speed_[0].Calculate();

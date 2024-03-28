@@ -19,7 +19,7 @@
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 Remote_t remote;
-
+uint8_t remote_key_press[16];
 const int kremote_offest = 1024;
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -49,6 +49,7 @@ void Remote_t::SbusToRc(uint8_t *_pdata)
     Pack_.ch1 -= kremote_offest;
     Pack_.ch2 -= kremote_offest;
     Pack_.ch3 -= kremote_offest;
+    KeyProcessRemote();
 }
 
 /**
@@ -78,4 +79,15 @@ void RemoteControlInit(UART_HandleTypeDef *_phuart)
     conf.callback_function = RemoteControlCallBack;
     remote.premote_instance = pUartRegister(&conf);
     return;
+}
+
+void Remote_t::KeyProcessRemote()  // 遥控器连接键鼠解算代码
+{
+    for (short i = 0; i < 16; i++) {
+        if (Pack_.key & (0x01 << i)) {
+            remote_key_press[i] = 1;
+        } else {
+            remote_key_press[i] = 0;
+        }
+    }
 }
