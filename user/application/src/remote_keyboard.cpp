@@ -88,7 +88,7 @@ void ModeTask()
             shoot_mode = 1;
             PidFlagInit(remote_pid_flag);
             // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
-            if (gimbal.angle_[0].GetMeasure() < 0.5) {
+            if (gimbal.angle_[0].GetMeasure()  > 0.5) {
                 if (gimbal.angle_[0].GetError() > 2.5f || gimbal.angle_[0].GetError() < -2.5f) {
                     pitchpid_switchflag = base_pid;
                 } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
@@ -107,7 +107,7 @@ void ModeTask()
             }
 
             // 当Yaw轴误差达到一定范围时，更改PID参数进行自适应调节
-            if (gimbal.angle_[1].GetError() > 15.f || gimbal.angle_[1].GetError() < -15.f) {
+            if (gimbal.angle_[1].GetError() > 3.5f || gimbal.angle_[1].GetError() < -3.5f) {
                 yawpid_switchflag = base_pid;
             } else if (gimbal.angle_[1].GetError() > 2.5f || gimbal.angle_[1].GetError() < -2.5f) {
                 yawpid_switchflag = yaw1_pid;
@@ -184,16 +184,16 @@ void ModeTask()
         if (remote.GetS1() == 1 || remote.GetS1() == 3) {
             PidFlagInit(remote_pid_flag);
             // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
-            if (gimbal.angle_[0].GetMeasure() < 0.5) {
-                if (gimbal.angle_[0].GetError() > 2.5f || gimbal.angle_[0].GetError() < -2.5f) {
+            if (gimbal.angle_[0].GetMeasure()  > -2.f) {
+                if (gimbal.angle_[0].GetError() > 1.5f || gimbal.angle_[0].GetError() < -1.5f) {
                     pitchpid_switchflag = base_pid;
-                } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
+                } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
                     pitchpid_switchflag = pitch1_pid;
                 } else {
                     pitchpid_switchflag = pitch2_pid;
                 }
             } else {
-                if (gimbal.angle_[0].GetError() > 3.5f || gimbal.angle_[0].GetError() < -3.5f) {
+                if (gimbal.angle_[0].GetError() > 1.5f || gimbal.angle_[0].GetError() < -1.5f) {
                     pitchpid_switchflag = pitch3_pid;
                 } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
                     pitchpid_switchflag = pitch4_pid;

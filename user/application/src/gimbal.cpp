@@ -63,7 +63,7 @@ void Gimbal::Control()
     speed_[0].SetMeasure(INS.Gyro[ROLL_AXIS]);//速度测量值为陀螺仪角速度，而不是电机速度
     speed_[1].SetMeasure(INS.Gyro[YAW_AXIS]);
 
-    output_speed_[0] = speed_[0].Calculate();
+    output_speed_[0] = -speed_[0].Calculate();//根据实际情况调整正负号
     output_speed_[1] = speed_[1].Calculate();
 }
 
@@ -76,7 +76,7 @@ void Gimbal::Control()
  */
 void Gimbal::SetPitchPosition(float _ang)
 {
-    angle_[0].SetRef(Math::AbsLimit(set_pitch_, 25.0f));
+    angle_[0].SetRef(_ang);
 }
 
 /**
@@ -86,7 +86,7 @@ void Gimbal::SetPitchPosition(float _ang)
  */
 void Gimbal::SetYawPosition(float _ang)
 {
-    angle_[1].SetRef(Math::AbsLimit(set_yaw_, 30.0f));
+    angle_[1].SetRef(_ang);
 }
 
 /**

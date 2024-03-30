@@ -24,8 +24,8 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 typedef enum {
-    ANGLE_FLAG = 0,
-    SPEED_FLAG = 1,
+    ANGLE_FLAG = 1,
+    SPEED_FLAG = 0,
 } Shoot_Flag;
 
 /* Exported types ------------------------------------------------------------*/

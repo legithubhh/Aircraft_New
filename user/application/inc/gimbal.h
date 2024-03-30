@@ -66,8 +66,6 @@ class Gimbal
     void MotorInit();
 
    private:
-    float set_pitch_;
-    float set_yaw_;
 };
 /* Exported variables --------------------------------------------------------*/
 extern Gimbal gimbal;

@@ -13,7 +13,7 @@
  *******************************************************************************
  */
 /* Includes ------------------------------------------------------------------*/
-#include "Client_UI.h"
+#include "client_UI.h"
 
 #include "ins.h"
 #include "referee.h"
@@ -52,8 +52,9 @@ char xiao_fu[8] = "MINBUFF";
 
 TaskHandle_t UI_Handle;
 /* External variables --------------------------------------------------------*/
-extern uint8_t shoot_mode;
-extern uint8_t fric_flag;  // 摩擦轮标志位
+/* 摩擦轮状态（ON为开启，OFF为停止）、发射模式（ON为连发，OFF为单发或停发）*/
+extern uint8_t shoot_mode;  // 发射模式
+extern uint8_t fric_flag;   // 摩擦轮状态
 /* Private function prototypes -----------------------------------------------*/
 
 void Task_UI(void *pvParament)

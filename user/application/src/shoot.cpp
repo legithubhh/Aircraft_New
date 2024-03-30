@@ -87,7 +87,7 @@ void Shoot::TrigCalc()
     }
 
     trigger_speed_.SetMeasure(trigger_motor_.GetSpd());
-    trig_output_ = trigger_speed_.Calculate();
+    trig_output_ = trigger_speed_.Calculate();//根据实际情况调整正负号
 }
 
 void Shoot::SetFricSpeed(float _speed)
