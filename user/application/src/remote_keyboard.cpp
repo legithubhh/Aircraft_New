@@ -88,18 +88,18 @@ void ModeTask()
             shoot_mode = 1;
             PidFlagInit(remote_pid_flag);
             // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
-            if (gimbal.angle_[0].GetMeasure()  > 0.5) {
-                if (gimbal.angle_[0].GetError() > 2.5f || gimbal.angle_[0].GetError() < -2.5f) {
+            if (gimbal.angle_[0].GetMeasure()  > -2.f) {
+                if (gimbal.angle_[0].GetError() > 3.f || gimbal.angle_[0].GetError() < -3.f) {
                     pitchpid_switchflag = base_pid;
-                } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
+                } else if (gimbal.angle_[0].GetError() > 0.75f || gimbal.angle_[0].GetError() < -0.75f) {
                     pitchpid_switchflag = pitch1_pid;
                 } else {
                     pitchpid_switchflag = pitch2_pid;
                 }
             } else {
-                if (gimbal.angle_[0].GetError() > 3.5f || gimbal.angle_[0].GetError() < -3.5f) {
+                if (gimbal.angle_[0].GetError() > 3.f || gimbal.angle_[0].GetError() < -3.f) {
                     pitchpid_switchflag = pitch3_pid;
-                } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
+                } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
                     pitchpid_switchflag = pitch4_pid;
                 } else {
                     pitchpid_switchflag = pitch5_pid;
@@ -185,17 +185,17 @@ void ModeTask()
             PidFlagInit(remote_pid_flag);
             // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节，分俯仰角调节以适应重心后偏
             if (gimbal.angle_[0].GetMeasure()  > -2.f) {
-                if (gimbal.angle_[0].GetError() > 1.5f || gimbal.angle_[0].GetError() < -1.5f) {
+                if (gimbal.angle_[0].GetError() > 3.f || gimbal.angle_[0].GetError() < -3.f) {
                     pitchpid_switchflag = base_pid;
-                } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
+                } else if (gimbal.angle_[0].GetError() > 0.75f || gimbal.angle_[0].GetError() < -0.75f) {
                     pitchpid_switchflag = pitch1_pid;
                 } else {
                     pitchpid_switchflag = pitch2_pid;
                 }
             } else {
-                if (gimbal.angle_[0].GetError() > 1.5f || gimbal.angle_[0].GetError() < -1.5f) {
+                if (gimbal.angle_[0].GetError() > 3.f || gimbal.angle_[0].GetError() < -3.f) {
                     pitchpid_switchflag = pitch3_pid;
-                } else if (gimbal.angle_[0].GetError() > 0.5f || gimbal.angle_[0].GetError() < -0.5f) {
+                } else if (gimbal.angle_[0].GetError() > 1.f || gimbal.angle_[0].GetError() < -1.f) {
                     pitchpid_switchflag = pitch4_pid;
                 } else {
                     pitchpid_switchflag = pitch5_pid;

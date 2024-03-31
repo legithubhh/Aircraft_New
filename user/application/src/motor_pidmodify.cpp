@@ -56,7 +56,7 @@ void PidSetRemote()
      * Pitch轴2006电机的PID参数初始化
      */
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.0f);  // 依据减速比(36/1*60)=2160*n得n转每秒
-    gimbal.speed_[0].Init(40.f, 0.f, 2.f, 1000.f * 3.8f, 0.0f);
+    gimbal.speed_[0].Init(30.f, 0.f, 2.5f, 1000.f * 4.5f, 0.0f);
     ;  // 限定最大值，防止突震，最大输出-10000-10000   (25.f, .15f, 3.f, 1000.f * 3.8f, 0.0f);
 
     /**
@@ -75,7 +75,7 @@ void PidSetRemote()
 void RemotePitchPidDemo1()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(30.f, 0.5f, 1.f, 1000.f * 5.f, 0.f);
+    gimbal.speed_[0].Init(25.f, 1.f, 1.f, 1000.f * 3.5f, 0.f);
 }
 
 /**
@@ -86,8 +86,8 @@ void RemotePitchPidDemo1()
  */
 void RemotePitchPidDemo2()
 {
-    gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(45.f, 1.5f, 0.f, 1000.f * 5.f, 0.f);
+    gimbal.angle_[0].Init(66.f, 0.f, 0.f, 216.f * 1.f, 0.f);
+    gimbal.speed_[0].Init(55.f, 1.5f, 0.f, 1000.f * 10.f, 0.f);
 }
 
 /**
@@ -99,7 +99,7 @@ void RemotePitchPidDemo2()
 void RemotePitchPidDemo3()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(35.f, 0.f, 1.f, 1000.f * 5.f, 0.f);
+    gimbal.speed_[0].Init(35.f, 0.f, 2.f, 1000.f * 6.f, 0.f);
 }
 
 /**
@@ -111,7 +111,7 @@ void RemotePitchPidDemo3()
 void RemotePitchPidDemo4()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(30.f, 1.5f, 0.5f, 1000.f * 5.f, 0.f);
+    gimbal.speed_[0].Init(20.f, 1.5f, 0.5f, 1000.f * 5.f, 0.f);
 }
 
 /**
@@ -123,8 +123,8 @@ void RemotePitchPidDemo4()
  */
 void RemotePitchPidDemo5()
 {
-    gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(45.f, 2.5f, 0.f, 1000.f * 5.f, 0.f);
+    gimbal.angle_[0].Init(66.f, 0.f, 0.f, 216.f * 1.f, 0.f);
+    gimbal.speed_[0].Init(50.f, 2.5f, 0.f, 1000.f * 10.f, 0.f);
 }
 
 /**
@@ -277,8 +277,8 @@ void RemoteAimingTargetSet()
 
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
-    gimbaltarget.turn_magazine_target = -1.125f * 60.0f * 36.0f;  // =-2430 依据减速比n*60*（36/1）得n转每秒
-    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+    gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置
     if (remote.GetCh1() < 2.f && remote.GetCh1() > -2.f) {
@@ -315,8 +315,8 @@ void KeymouseAimingTargetSet()
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
-    gimbaltarget.turn_magazine_target = -1.125f * 60.0f * 36.0f;  //=-2430 依据减速比n*60*（36/1）得n转每秒
-    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+    gimbaltarget.turn_magazine_target = 1.125f * 60.0f * 36.0f;  //=2430 依据减速比n*60*（36/1）得n转每秒
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置
     float pitch_target = remote.GetMouseY();
@@ -351,8 +351,8 @@ void AutoAimingTargetSet()
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
-    gimbaltarget.turn_magazine_target = -1000;
-    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+    gimbaltarget.turn_magazine_target = 1000;
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置
     if (remote.GetCh1() < 1.f && remote.GetCh1() > -1.f) {
@@ -386,7 +386,7 @@ void GimbalStop1TargetSet()
 
     // 拨弹盘目标值设置
     gimbaltarget.turn_magazine_target = 0;
-    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置
     if (remote.GetCh1() < 1.f && remote.GetCh1() > -1.f) {
@@ -424,7 +424,7 @@ void GimbalStop2TargetSet()
 
     // 拨弹盘目标值设置
     gimbaltarget.turn_magazine_target = 0;
-    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置
     gimbaltarget.pitch_target = 0;

@@ -61,6 +61,8 @@ void Error_Handler(void);
 #define REMOTE_RX_GPIO_Port GPIOC
 #define REFEREE_RX_Pin GPIO_PIN_9
 #define REFEREE_RX_GPIO_Port GPIOG
+#define LASER_Pin GPIO_PIN_8
+#define LASER_GPIO_Port GPIOC
 #define LED_R_Pin GPIO_PIN_12
 #define LED_R_GPIO_Port GPIOH
 #define LED_G_Pin GPIO_PIN_11

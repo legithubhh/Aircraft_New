@@ -57,7 +57,16 @@ void GimbalTask()
     // CAN1总线0X1FF对应电机ID，ID号1为Yaw轴6020
     DjiMotorSend(&hcan1, 0x1FF, (int16_t)gimbal.output_speed_[1], 0, 0, 0);
     // CAN1总线0X200对应电机ID，ID号1-4分别为摩擦轮3508电机1，摩擦轮3508电机2，拨弹盘2006电机，Pitch轴2006电机
-    DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)shoot.trig_output_, (int16_t)gimbal.output_speed_[0]);
+
+    if (remote.GetS1() == 1)
+    {
+       DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], 0, (int16_t)gimbal.output_speed_[0]);
+    }
+    
+    if (remote.GetS1() != 1)
+    {
+       DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)shoot.trig_output_, (int16_t)gimbal.output_speed_[0]);
+    }
 
     // 软件控制C6020电调进入快速设置ID模式 
     // CANC6020IdSet();
