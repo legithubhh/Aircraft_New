@@ -50,20 +50,45 @@ void PidSetRemote()
     /**
      * 拨弹盘2006电机的PID参数初始化
      */
-    shoot.trigger_pos_.Init(10.f, 0.f, 0.f, 216.f * 1.f, 0.f);    // 依据减速比(36/1*60)=2160*n得n转每秒
-    shoot.trigger_speed_.Init(8.f, 0.f, 0.f, 1000.f * 5.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
+    shoot.trigger_pos_.Init(50.f, 0.f, 0.f, 216.f * 10.f, 0.f);   // 依据减速比(36/1*60)=2160*n得n转每秒（最快）
+    shoot.trigger_speed_.Init(6.f, 0.f, 0.f, 1000.f * 6.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
     /**
      * Pitch轴2006电机的PID参数初始化
      */
-    gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.0f);  // 依据减速比(36/1*60)=2160*n得n转每秒
-    gimbal.speed_[0].Init(30.f, 0.f, 2.5f, 1000.f * 4.5f, 0.0f);
+    gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.0f);
+    gimbal.speed_[0].Init(20.f, 1.f, 1.f, 1000.f * 2.f, 0.0f);
     ;  // 限定最大值，防止突震，最大输出-10000-10000   (25.f, .15f, 3.f, 1000.f * 3.8f, 0.0f);
 
     /**
-     * Yaw轴6020电机的PID参数初始化
+     * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.angle_[1].Init(30.f, 10.f, 10.f, 60.f * 15.f, 0.0f);   // n转每秒
-    gimbal.speed_[1].Init(20.f, 10.f, 10.f, 3000.f * 2.f, 0.0f);  // 限定最大值，防止突震，最大输出-30000-30000
+    gimbal.angle_[1].Init(30.f, 0.f, 0.f, 60.f * 5.f, 0.0f);  // n转每秒（最快）
+    gimbal.speed_[1].Init(15.f, 0.f, 0.f, 3000.f * 1.f, 0.0f);
+}
+
+/**
+ * @brief       遥控模式——Yaw轴模式1:当yaw轴为接近目标值时，减小双环KP，避免超调。增加KD，快速抑制震荡。增加KI，避免输出不够而卡住。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void RemoteYawPidDemo1()
+{
+    gimbal.angle_[1].Init(30.f, 0.f, 2.5f, 60.f * 1.75f, 0.f);
+    gimbal.speed_[1].Init(5.f, 10.f, 5.f, 3000.f * 0.5f, 0.f);
+}
+
+/**
+ * @brief       遥控模式——Yaw轴模式2:当yaw轴更为接近目标值时，增大双环KP，增加KD，增强抗干扰能力；取消积分，避免静态干扰。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void RemoteYawPidDemo2()
+{
+    gimbal.angle_[1].Init(66.f, 0.f, 1.f, 66.f * 1.f, 0.f);
+    gimbal.speed_[1].Init(66.f, 0.f, 1.f, 4356.f * 1.f, 0.f);
+    gimbal.speed_[1].i_out_ = 0;
 }
 
 /**
@@ -75,7 +100,7 @@ void PidSetRemote()
 void RemotePitchPidDemo1()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(25.f, 1.f, 1.f, 1000.f * 3.5f, 0.f);
+    gimbal.speed_[0].Init(10.f, 1.5f, 1.5f, 1000.f * 1.f, 0.f);
 }
 
 /**
@@ -86,8 +111,8 @@ void RemotePitchPidDemo1()
  */
 void RemotePitchPidDemo2()
 {
-    gimbal.angle_[0].Init(66.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(55.f, 1.5f, 0.f, 1000.f * 10.f, 0.f);
+    gimbal.angle_[0].Init(100.f, 0.f, 0.f, 216.f * 1.f, 0.f);
+    gimbal.speed_[0].Init(50.f, 2.5f, 2.5f, 1000.f * 5.f, 0.f);
 }
 
 /**
@@ -98,12 +123,12 @@ void RemotePitchPidDemo2()
  */
 void RemotePitchPidDemo3()
 {
-    gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(35.f, 0.f, 2.f, 1000.f * 6.f, 0.f);
+    gimbal.angle_[0].Init(50.f, 0.f, 0.f, 216.f * 1.f, 0.f);
+    gimbal.speed_[0].Init(35.f, 0.f, 5.f, 1000.f * 3.f, 0.f);
 }
 
 /**
- * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴为接近目标值时，减小双环KP，减少KD，避免超调；增大KI，进一步弥补静差，提高控制精度。
+ * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴为接近目标值时，减小双环KP，增加KD，避免超调；增大KI，进一步弥补静差，提高控制精度。
  *   @arg       None
  * @retval      None
  * @note        None
@@ -111,11 +136,11 @@ void RemotePitchPidDemo3()
 void RemotePitchPidDemo4()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(20.f, 1.5f, 0.5f, 1000.f * 5.f, 0.f);
+    gimbal.speed_[0].Init(20.f, 5.f, 7.5f, 1000.f * 5.f, 0.f);
 }
 
 /**
- * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，增加KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
  * @brief       同时最终输出应该控制上限，避免过冲引发震荡。
  *   @arg       None
  * @retval      None
@@ -123,32 +148,8 @@ void RemotePitchPidDemo4()
  */
 void RemotePitchPidDemo5()
 {
-    gimbal.angle_[0].Init(66.f, 0.f, 0.f, 216.f * 1.f, 0.f);
-    gimbal.speed_[0].Init(50.f, 2.5f, 0.f, 1000.f * 10.f, 0.f);
-}
-
-/**
- * @brief       遥控模式——Yaw轴模式1:当yaw轴为接近目标值时，减小双环KP，减少KD，避免超调。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void RemoteYawPidDemo1()
-{
-    gimbal.angle_[1].Init(10.f, 0.f, 5.f, 60.f * 15.f, 0.f);
-    gimbal.speed_[1].Init(5.f, 0.f, 5.f, 3000.f * 1.f, 0.f);
-}
-
-/**
- * @brief       遥控模式——Yaw轴模式2:当yaw轴更为接近目标值时，增大双环KP，减少KD，增强抗干扰能力。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void RemoteYawPidDemo2()
-{
-    gimbal.angle_[1].Init(20.f, 0.f, 1.f, 60.f * 15.f, 0.f);
-    gimbal.speed_[1].Init(20.f, 0.f, 1.f, 3000.f * 3.f, 0.f);
+    gimbal.angle_[0].Init(88.f, 0.f, 0.f, 216.f * 1.f, 0.f);
+    gimbal.speed_[0].Init(30.f, 10.f, 10.f, 1000.f * 6.f, 0.f);
 }
 
 /**
@@ -277,19 +278,24 @@ void RemoteAimingTargetSet()
 
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
-    gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
-    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    if (remote.GetS1() == 2) {
+        gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (remote.GetS1() == 3) {
+        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    }
 
     // Pitch轴目标值设置
     if (remote.GetCh1() < 2.f && remote.GetCh1() > -2.f) {
         gimbaltarget.pitch_target = remote.GetCh1() * 0.f;
     } else if (remote.GetCh1() > 2.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 20.f;
+        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 8.f;
     }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
     else {
         gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
     }
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 20.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为20度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
@@ -299,7 +305,7 @@ void RemoteAimingTargetSet()
         gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
     }
     VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
-    gimbal.SetYawPosition(gimbaltarget.yaw_target);
+    gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
 /**
@@ -335,7 +341,7 @@ void KeymouseAimingTargetSet()
     }
     gimbaltarget.yaw_target += yaw_target * 0.00075f;
     VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
-    gimbal.SetYawPosition(gimbaltarget.yaw_target);
+    gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
 /**
@@ -358,18 +364,18 @@ void AutoAimingTargetSet()
     if (remote.GetCh1() < 1.f && remote.GetCh1() > -1.f) {
         gimbaltarget.pitch_target = 0.f;
     } else if (remote.GetCh1() > 1.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 20.f;
+        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 8.f;
     }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
     else {
         gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
     }
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 20.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为20度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
     VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右45度
-    gimbal.SetYawPosition(gimbaltarget.yaw_target);
+    gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
 /**
@@ -392,12 +398,12 @@ void GimbalStop1TargetSet()
     if (remote.GetCh1() < 1.f && remote.GetCh1() > -1.f) {
         gimbaltarget.pitch_target = remote.GetCh1() * 0.f;
     } else if (remote.GetCh1() > 1.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 20.f;
+        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 8.f;
     }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
     else {
         gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
     }
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 20.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为20度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
@@ -407,7 +413,7 @@ void GimbalStop1TargetSet()
         gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
     }
     VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
-    gimbal.SetYawPosition(gimbaltarget.yaw_target);
+    gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
 /**
@@ -432,5 +438,5 @@ void GimbalStop2TargetSet()
 
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = 0;
-    gimbal.SetYawPosition(gimbaltarget.yaw_target);
+    gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }

@@ -34,8 +34,8 @@ void Gimbal::PidInit()
 {
     angle_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 100, 0, 0, 0, 0);
     speed_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 3000, 0, 0, 0, 0);
-    angle_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
-    speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
+    angle_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 105, 0, 0, 0, 0);
+    speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 1500, 0, 0, 0, 0);
 }
 
 /**
@@ -44,7 +44,7 @@ void Gimbal::PidInit()
 void Gimbal::MotorInit()
 {
     motor_[0].Init(0x204, &hcan1, ABSOLUTE_FLAG);
-    motor_[1].Init(0x205, &hcan1, ABSOLUTE_FLAG);
+    motor_[1].Init(0x203, &hcan1, ABSOLUTE_FLAG);
     motor_[0].pdji_motor_instance->pCanCallBack = PitchMotorCallback;
     motor_[1].pdji_motor_instance->pCanCallBack = YawMotorCallback;
 }

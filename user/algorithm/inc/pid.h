@@ -53,6 +53,7 @@ typedef struct
 class Pid
 {
    public:
+   float i_out_;
     void Init(float _kp, float _ki, float _kd, float _max_out, float _dead_band)
     {
         kp_ = _kp;
@@ -117,7 +118,7 @@ class Pid
 
     float ref_, measure_, last_measure_;
     float err_, last_err_;
-    float p_out_, i_out_, d_out_, last_d_out_, i_term_, last_i_term_;
+    float p_out_, d_out_, last_d_out_, i_term_, last_i_term_;
     float output_, last_output_;
 
     uint32_t DWT_CNT;

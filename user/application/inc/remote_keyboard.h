@@ -30,21 +30,21 @@ extern "C" {
  */
 typedef enum {
     /**
-     * 0x200对应CAN1发送控制两个3508和两个2006，0x1FF对应CAN1发送控制6020
+     * 0x200对应CAN1发送控制两个摩擦轮3508，一个Yaw轴3508和一个Pitch轴2006，0x1FF对应CAN1发送控制拨弹盘2006
      */
     CAN_GIMBAL_SEND_ID = 0x200,
     CAN_GIMBAL_SEND_ELSE_ID = 0x1FF,
 
     /**
-     * 分别对应两个3508和两个2006报文ID，和一个6020报文ID
+     * 分别对应三个3508和两个2006报文ID
      */
     CAN_FRICTION1_3508_ID = 0x201,
     CAN_FRICTION2_3508_ID = 0x202,
 
-    CAN_TRIGGER_2006_ID = 0x203,
+    CAN_TRIGGER_2006_ID = 0x205,
     CAN_PITCH_2006_ID = 0x204,
 
-    CAN_YAW_6020_ID = 0x205,
+    CAN_YAW_3508_ID = 0x203,
 
     /**
      * 3508电调ID软件快速设置发送ID
