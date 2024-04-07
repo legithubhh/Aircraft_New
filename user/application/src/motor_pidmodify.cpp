@@ -27,12 +27,7 @@
 /* External variables --------------------------------------------------------*/
 GimbalTargetSylloge gimbaltarget;
 /* Private function prototypes -----------------------------------------------*/
-void RemoteAimingTargetSet();
-void KeymouseAimingTargetSet();
-void AutoAimingTargetSet();
-void MotorStart();
-void GimbalStop1TargetSet();
-void GimbalStop2TargetSet();
+
 
 /**
  * @brief       初始化模式：遥控模式——基本模式：PID参数集中调制
@@ -40,7 +35,7 @@ void GimbalStop2TargetSet();
  * @retval      None
  * @note        None
  */
-void PidSetRemote()
+void PidSetInitial()
 {
     /**
      * 左右摩擦轮3508电机的PID参数初始化
@@ -72,7 +67,7 @@ void PidSetRemote()
  * @retval      None
  * @note        None
  */
-void RemoteYawPidDemo1()
+void YawPidDemo1()
 {
     gimbal.angle_[1].Init(30.f, 0.f, 2.5f, 60.f * 1.75f, 0.f);
     gimbal.speed_[1].Init(5.f, 10.f, 5.f, 3000.f * 0.5f, 0.f);
@@ -84,7 +79,7 @@ void RemoteYawPidDemo1()
  * @retval      None
  * @note        None
  */
-void RemoteYawPidDemo2()
+void YawPidDemo2()
 {
     gimbal.angle_[1].Init(66.f, 0.f, 1.f, 66.f * 1.f, 0.f);
     gimbal.speed_[1].Init(66.f, 0.f, 1.f, 4356.f * 1.f, 0.f);
@@ -97,7 +92,7 @@ void RemoteYawPidDemo2()
  * @retval      None
  * @note        None
  */
-void RemotePitchPidDemo1()
+void PitchPidDemo1()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
     gimbal.speed_[0].Init(10.f, 1.5f, 1.5f, 1000.f * 1.f, 0.f);
@@ -109,7 +104,7 @@ void RemotePitchPidDemo1()
  * @retval      None
  * @note        None
  */
-void RemotePitchPidDemo2()
+void PitchPidDemo2()
 {
     gimbal.angle_[0].Init(100.f, 0.f, 0.f, 216.f * 1.f, 0.f);
     gimbal.speed_[0].Init(50.f, 2.5f, 2.5f, 1000.f * 5.f, 0.f);
@@ -121,7 +116,7 @@ void RemotePitchPidDemo2()
  * @retval      None
  * @note        None
  */
-void RemotePitchPidDemo3()
+void PitchPidDemo3()
 {
     gimbal.angle_[0].Init(50.f, 0.f, 0.f, 216.f * 1.f, 0.f);
     gimbal.speed_[0].Init(35.f, 0.f, 5.f, 1000.f * 3.f, 0.f);
@@ -133,7 +128,7 @@ void RemotePitchPidDemo3()
  * @retval      None
  * @note        None
  */
-void RemotePitchPidDemo4()
+void PitchPidDemo4()
 {
     gimbal.angle_[0].Init(45.f, 0.f, 0.f, 216.f * 1.f, 0.f);
     gimbal.speed_[0].Init(20.f, 5.f, 7.5f, 1000.f * 5.f, 0.f);
@@ -146,110 +141,10 @@ void RemotePitchPidDemo4()
  * @retval      None
  * @note        None
  */
-void RemotePitchPidDemo5()
+void PitchPidDemo5()
 {
     gimbal.angle_[0].Init(88.f, 0.f, 0.f, 216.f * 1.f, 0.f);
     gimbal.speed_[0].Init(30.f, 10.f, 10.f, 1000.f * 6.f, 0.f);
-}
-
-/**
- * @brief       键鼠模式PID参数集中调制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PidSetKeymouse()
-{
-}
-
-/**
- * @brief       键鼠模式PID参数集中调制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void KeymPitchPidDemo1()
-{
-}
-
-/**
- * @brief       自瞄模式PID参数集中调制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PidSetAutoaim()
-{
-}
-
-/**
- * @brief       自瞄模式PID参数集中调制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void AutoPitchPidDemo1()
-{
-}
-
-/**
- * @brief       开启遥控器控制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void RemoteControlMode()
-{
-    RemoteAimingTargetSet();
-    MotorStart();
-}
-
-/**
- * @brief       开启键鼠控制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void KeymouseControlMode()
-{
-    KeymouseAimingTargetSet();
-    MotorStart();
-}
-
-/**
- * @brief       开启自瞄控制
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void AutoControlMode()
-{
-    AutoAimingTargetSet();
-    MotorStart();
-}
-
-/**
- * @brief       急停模式1
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void GimbalStop1ControlMode()
-{
-    GimbalStop1TargetSet();
-    MotorStart();
-}
-
-/**
- * @brief       急停模式2
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void GimbalStop2ControlMode()
-{
-    GimbalStop2TargetSet();
-    MotorStart();
 }
 
 /**
@@ -286,26 +181,52 @@ void RemoteAimingTargetSet()
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     }
 
+    // // Pitch轴目标值设置
+    // if (remote.GetCh1() < 2.f && remote.GetCh1() > -2.f) {
+    //     gimbaltarget.pitch_target = remote.GetCh1() * 0.f;
+    // } else if (remote.GetCh1() > 2.f) {
+    //     gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 8.f;
+    // }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
+    // else {
+    //     gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
+    // }
+    // VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
+    // gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
+
+    // // Yaw轴目标值设置
+    // if (remote.GetCh2() < 2.f && remote.GetCh2() > -2.f) {
+    //     gimbaltarget.yaw_target = remote.GetCh2() * 0.f;
+    // } else {
+    //     gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
+    // }
+    // VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
+    // gimbal.SetYawPosition(-gimbaltarget.yaw_target);
+
+
     // Pitch轴目标值设置
-    if (remote.GetCh1() < 2.f && remote.GetCh1() > -2.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() * 0.f;
-    } else if (remote.GetCh1() > 2.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 8.f;
+    float pitch_target;
+     if (remote.GetCh1() > 600.f) {
+        pitch_target = 0.1f;
     }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
-    else {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
+    else if(remote.GetCh1() < -600.f) {
+        pitch_target = -0.1f;
     }
+    gimbaltarget.pitch_target += pitch_target;
     VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
-    if (remote.GetCh2() < 2.f && remote.GetCh2() > -2.f) {
-        gimbaltarget.yaw_target = remote.GetCh2() * 0.f;
-    } else {
-        gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
+    float yaw_target;
+    if (remote.GetCh2() > 600.f) {
+        yaw_target = 0.1f;
+    } 
+    else if (remote.GetCh2() < -600.f) {
+        yaw_target = -0.1f;
     }
+    gimbaltarget.yaw_target += yaw_target;
     VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
+
 }
 
 /**
@@ -417,7 +338,7 @@ void GimbalStop1TargetSet()
 }
 
 /**
- * @brief      全停模式，程序控制摩擦轮速度为0，拨弹盘速度为0，双轴回到0度位置
+ * @brief      全停模式，拨弹盘，摩擦轮目标速度设为0，双轴目标位置设为0度,输出强制为0,电机CAN信号直接发送0
  *   @arg       None
  * @retval      None
  * @note        None

@@ -34,24 +34,22 @@ typedef struct
 } GimbalTargetSylloge;
 /* Exported variables --------------------------------------------------------*/
 /* Exported function prototypes ----------------------------------------------*/
-void PidSetRemote();
-void RemotePitchPidDemo1();
-void RemotePitchPidDemo2();
-void RemotePitchPidDemo3();
-void RemotePitchPidDemo4();
-void RemotePitchPidDemo5();
-void RemoteYawPidDemo1();
-void RemoteYawPidDemo2();
-void PidSetKeymouse();
-void PidSetAutoaim();
-void KeymPitchPidDemo1();
-void AutoPitchPidDemo1();
+void PidSetInitial();
+void PidAdjust();
+void PitchPidDemo1();
+void PitchPidDemo2();
+void PitchPidDemo3();
+void PitchPidDemo4();
+void PitchPidDemo5();
+void YawPidDemo1();
+void YawPidDemo2();
 
-void RemoteControlMode();
-void KeymouseControlMode();
-void AutoControlMode();
-void GimbalStop1ControlMode();
-void GimbalStop2ControlMode();
+void RemoteAimingTargetSet();
+void KeymouseAimingTargetSet();
+void AutoAimingTargetSet();
+void GimbalStop1TargetSet();
+void GimbalStop2TargetSet();
+void MotorStart();
 #endif
 
 #endif /* __MOTOR_PIDMODIFY_H_ */

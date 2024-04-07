@@ -119,11 +119,11 @@ void MX_FREERTOS_Init(void) {
   insTaskHandle = osThreadCreate(osThread(insTask), NULL);
 
   /* definition and creation of gimbalTask */
-  osThreadDef(gimbalTask, StartGimbalTask, osPriorityAboveNormal, 0, 128);
+  osThreadDef(gimbalTask, StartGimbalTask, osPriorityAboveNormal, 0, 256);
   gimbalTaskHandle = osThreadCreate(osThread(gimbalTask), NULL);
 
   /* definition and creation of modeTask */
-  osThreadDef(modeTask, StartModeTask, osPriorityHigh, 0, 256);
+  osThreadDef(modeTask, StartModeTask, osPriorityHigh, 0, 384);
   modeTaskHandle = osThreadCreate(osThread(modeTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */

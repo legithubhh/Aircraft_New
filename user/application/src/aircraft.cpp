@@ -21,6 +21,7 @@
 #include "remote.h"
 #include "remote_keyboard.h"
 #include "shoot.h"
+#include "motor_pidmodify.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -46,6 +47,8 @@ void GimbalInit()
 {
     gimbal.PidInit();
     shoot.PidInit();
+    /*PID初始化*/
+    PidSetInitial();
 }
 
 /**

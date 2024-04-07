@@ -40,11 +40,9 @@ typedef enum {
      */
     CAN_FRICTION1_3508_ID = 0x201,
     CAN_FRICTION2_3508_ID = 0x202,
-
-    CAN_TRIGGER_2006_ID = 0x205,
-    CAN_PITCH_2006_ID = 0x204,
-
     CAN_YAW_3508_ID = 0x203,
+    CAN_PITCH_2006_ID = 0x204,
+    CAN_TRIGGER_2006_ID = 0x205,
 
     /**
      * 3508电调ID软件快速设置发送ID
@@ -52,27 +50,6 @@ typedef enum {
     CAN_MOTOR3508_SET_ID = 0x700
 
 } CanMsgMotorId;
-
-/**
- * 针对遥控器，键鼠与自瞄三种控制模式设置三套相适应枚举类型PID参数，以下为提供判断条件的对应的标志编码
- */
-typedef enum {
-    /**
-     * 遥控模式与急停模式
-     */
-    remote_pid_flag = 0,
-
-    /**
-     * 键鼠模式
-     */
-    keymouse_pid_flag = 1,
-
-    /**
-     * 自瞄模式
-     */
-    autoaim_pid_flag = 2,
-
-} PidsetModeID;
 
 /**
  * 同一电机在执行不同任务时可能需要用到不同PID参数，进行PID参数的切换，以下为提供判断条件的对应的标志编码
