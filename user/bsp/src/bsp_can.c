@@ -44,7 +44,7 @@ CanInstance *pCanRegister(CanInitConf *_pconf)
     for (uint8_t i = 0; i < 16; i++) {
         if (pcan_instance[i]->rx_id == _pconf->rx_id && pcan_instance[i]->hcan == _pconf->hcan) {
             while (1) {
-            };
+            }
         }
     }
 
@@ -60,6 +60,7 @@ CanInstance *pCanRegister(CanInitConf *_pconf)
     p_instance->rx_id = _pconf->rx_id;
     p_instance->pCanCallBack = _pconf->pCanCallBack;
 
+    // 让回调函数参数pcan_instance与实际使用CAN电机的参数p_instance指向同一地址，这样在回调函数中调用pcan_instance得到数据，使用时就可以通过p_instance调用
     pcan_instance[idx++] = p_instance;
 
     return p_instance;
@@ -109,13 +110,13 @@ static void CanRxCallBack(CAN_HandleTypeDef *_phcan, uint32_t _Fifo)
     static CAN_RxHeaderTypeDef rx_header;
     uint8_t rx_buff[8];
     while (HAL_CAN_GetRxFifoFillLevel(_phcan, _Fifo)) {
-        HAL_CAN_GetRxMessage(_phcan, _Fifo, &rx_header, rx_buff);
+        HAL_CAN_GetRxMessage(_phcan, _Fifo, &rx_header, rx_buff);  // 接收数据，指定接收地址为rx_buff
         for (uint8_t i = 0; i < 16; i++) {
             if (rx_header.StdId == pcan_instance[i]->rx_id && _phcan == pcan_instance[i]->hcan) {
                 if (pcan_instance[i]->pCanCallBack != NULL) {
                     pcan_instance[i]->rx_len = rx_header.DLC;
                     memcpy(pcan_instance[i]->rx_buff, rx_buff, rx_header.DLC);
-                    pcan_instance[i]->pCanCallBack();
+                    pcan_instance[i]->pCanCallBack();  // 调用更新解码函数，更新数据
                 }
             }
         }

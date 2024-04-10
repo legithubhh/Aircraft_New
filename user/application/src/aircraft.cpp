@@ -17,11 +17,11 @@
 
 #include "bsp_dwt.h"
 #include "gimbal.h"
+#include "motor_pidmodify.h"
 #include "referee.h"
 #include "remote.h"
 #include "remote_keyboard.h"
 #include "shoot.h"
-#include "motor_pidmodify.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -60,14 +60,24 @@ void GimbalTask()
     // CAN1总线0X1FF对应电机ID，ID号1为拨弹盘2006电机
     // CAN1总线0X200对应电机ID，ID号1-4分别为摩擦轮3508电机1，摩擦轮3508电机2，Yaw轴3508电机，Pitch轴2006电机
 
-    if (remote.GetS1() == 1 && remote.GetS2() != 2) {
+    if (remote.GetS1() == 1 && remote.GetS2() == 1) {
         DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
     }
 
-    if (remote.GetS1() != 1 && remote.GetS2() != 2) {
+    if (remote.GetS1() != 1 && remote.GetS2() == 1) {
         DjiMotorSend(&hcan1, 0x1FF, (int16_t)shoot.trig_output_, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)shoot.trig_output_, (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+    }
+
+    if (remote.GetS1() == 1 && remote.GetS2() == 3) {
+        DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+    }
+
+    if (remote.GetS1() != 1 && remote.GetS2() == 3) {
+        DjiMotorSend(&hcan1, 0x1FF, (int16_t)shoot.trig_output_, 0, 0, 0);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
     }
 
     if (remote.GetS1() != 2 && remote.GetS2() == 2) {

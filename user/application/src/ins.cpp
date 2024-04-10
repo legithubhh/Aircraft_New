@@ -13,15 +13,14 @@
  *******************************************************************************
  */
 /* Includes ------------------------------------------------------------------*/
-#include "ins.h"
-
-#include "bmi088_driver.h"
 #include "bsp_dwt.h"
+#include "ins.h"
 #include "pid.h"
 #include "quaternion_ekf.h"
-#include "stdint.h"
 #include "tim.h"
 #include "user_lib.h"
+#include "bmi088_driver.h"
+#include "stdint.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -142,6 +141,8 @@ void INS_Task(void)
         INS.Pitch = QEKF_INS.Pitch;
         INS.Roll = QEKF_INS.Roll;
         INS.YawTotalAngle = QEKF_INS.YawTotalAngle;
+
+        
     }
 
     // temperature control
@@ -240,28 +241,28 @@ static void IMU_Param_Correction(IMU_Param_t *param, float gyro[3], float accel[
         gyro_temp[i] = gyro[i] * param->scale[i];
 
     gyro[PITCH_AXIS] = c_11 * gyro_temp[PITCH_AXIS] +
-                       c_12 * gyro_temp[ROLL_AXIS] +
-                       c_13 * gyro_temp[YAW_AXIS];
+              c_12 * gyro_temp[ROLL_AXIS] +
+              c_13 * gyro_temp[YAW_AXIS];
     gyro[ROLL_AXIS] = c_21 * gyro_temp[PITCH_AXIS] +
-                      c_22 * gyro_temp[ROLL_AXIS] +
-                      c_23 * gyro_temp[YAW_AXIS];
+              c_22 * gyro_temp[ROLL_AXIS] +
+              c_23 * gyro_temp[YAW_AXIS];
     gyro[YAW_AXIS] = c_31 * gyro_temp[PITCH_AXIS] +
-                     c_32 * gyro_temp[ROLL_AXIS] +
-                     c_33 * gyro_temp[YAW_AXIS];
+              c_32 * gyro_temp[ROLL_AXIS] +
+              c_33 * gyro_temp[YAW_AXIS];
 
     float accel_temp[3];
     for (uint8_t i = 0; i < 3; i++)
         accel_temp[i] = accel[i];
 
     accel[PITCH_AXIS] = c_11 * accel_temp[PITCH_AXIS] +
-                        c_12 * accel_temp[ROLL_AXIS] +
-                        c_13 * accel_temp[YAW_AXIS];
+               c_12 * accel_temp[ROLL_AXIS] +
+               c_13 * accel_temp[YAW_AXIS];
     accel[ROLL_AXIS] = c_21 * accel_temp[PITCH_AXIS] +
-                       c_22 * accel_temp[ROLL_AXIS] +
-                       c_23 * accel_temp[YAW_AXIS];
+               c_22 * accel_temp[ROLL_AXIS] +
+               c_23 * accel_temp[YAW_AXIS];
     accel[YAW_AXIS] = c_31 * accel_temp[PITCH_AXIS] +
-                      c_32 * accel_temp[ROLL_AXIS] +
-                      c_33 * accel_temp[YAW_AXIS];
+               c_32 * accel_temp[ROLL_AXIS] +
+               c_33 * accel_temp[YAW_AXIS];
 
     lastYawOffset = param->Yaw;
     lastPitchOffset = param->Pitch;

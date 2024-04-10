@@ -191,7 +191,7 @@ void StartGimbalTask(void const * argument)
     /* Infinite loop */
     for (;;) {
         GimbalTask();
-        osDelay(5);
+        osDelay(1);
     }
   /* USER CODE END StartGimbalTask */
 }

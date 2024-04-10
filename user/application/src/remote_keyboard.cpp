@@ -71,6 +71,9 @@ void ModeTask()
     // 右拨杆在中，键鼠模式
     if (remote.GetS2() == 3) {
         // 当启用空中支援且有剩余发弹时间(默认向下取整0.9==0）时才能用键鼠模式控制，否则为全停模式
+
+        referee.aerial_robot_support_data_.airforce_status = 2;//测试用
+        referee.aerial_robot_support_data_.time_remain = 1;//测试用
         if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
             fric_flag = 1;
             shoot_mode = 1;
@@ -147,7 +150,6 @@ void PidFlagInit()
  */
 void PidModeSwitch()
 {
-    PidAdjust();
     // Pitch轴PID调制
     switch (pitchpid_switchflag) {
         case base_pid:
@@ -171,9 +173,10 @@ void PidModeSwitch()
     // Yaw轴PID调制
     switch (yawpid_switchflag) {
         case base_pid:
+            YawPidDemo2();
             break;
         case yaw1_pid:
-            YawPidDemo1();
+            YawPidDemo2();
             break;
         case yaw2_pid:
             YawPidDemo2();
