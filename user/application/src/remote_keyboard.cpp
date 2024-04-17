@@ -24,10 +24,10 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint8_t trigger_flag;                        // 拨弹盘开关控制
-uint8_t fric_flag;                           // 摩擦轮状态标志
-uint8_t shoot_mode;                          // 射击模式标志
-PidSwitchMode yawpid_switchflag = base_pid;  // 针对不同控制模式，在同一电机执行不同任务时，设置不同的PID参数
+uint8_t trigger_flag;                          // 拨弹盘开关控制
+uint8_t fric_flag;                             // 摩擦轮状态标志
+uint8_t shoot_mode;                            // 射击模式标志
+PidSwitchMode pitchpid_switchflag = base_pid;  // 针对不同控制模式，在同一电机执行不同任务时，设置不同的PID参数
 /* External variables --------------------------------------------------------*/
 extern uint8_t remote_key_press[16];
 extern uint8_t referee_key_press[16];
@@ -130,7 +130,30 @@ void PidAdjust()
  */
 void PidFlagInit()
 {
-    yawpid_switchflag = base_pid;
+    pitchpid_switchflag = base_pid;
+}
+
+void PidAdjustByError()
+{
+    // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节
+
+    // if (gimbal.pitch_angle.GetMeasure() < 0.5) {
+    if (gimbal.pitch_angle.GetError() > 2.5f || gimbal.pitch_angle.GetError() < -2.5f) {
+        pitchpid_switchflag = base_pid;
+    } else if (gimbal.pitch_angle.GetError() > 1.f || gimbal.pitch_angle.GetError() < -1.f) {
+        pitchpid_switchflag = base_pid;
+    } else {
+        pitchpid_switchflag = base_pid;
+    }
+    // } else {
+    //     if (gimbal.pitch_angle.GetError() > 3.5f || gimbal.pitch_angle.GetError() < -3.5f) {
+    //         pitchpid_switchflag = pitch3_pid;
+    //     } else if (gimbal.pitch_angle.GetError() > 0.5f || gimbal.pitch_angle.GetError() < -0.5f) {
+    //         pitchpid_switchflag = pitch4_pid;
+    //     } else {
+    //         pitchpid_switchflag = pitch5_pid;
+    //     }
+    // }
 }
 
 /**
@@ -141,29 +164,25 @@ void PidFlagInit()
  */
 void PidModeSwitch()
 {
-    // Yaw轴PID调制
-    switch (yawpid_switchflag) {
+    // Pitch轴PID调制
+    switch (pitchpid_switchflag) {
         case base_pid:
-            YawPidDemo2();
             break;
-        case yaw1_pid:
-            YawPidDemo2();
+        case pitch1_pid:
+            PitchPidDemo1();
             break;
-        case yaw2_pid:
-            YawPidDemo2();
+        case pitch2_pid:
+            PitchPidDemo2();
             break;
-    }
-}
-
-void PidAdjustByError()
-{
-    // 当Yaw轴误差达到一定范围时，更改PID参数进行自适应调节
-    if (gimbal.yaw_angle.GetError() > 3.5f || gimbal.yaw_angle.GetError() < -3.5f) {
-        yawpid_switchflag = base_pid;
-    } else if (gimbal.yaw_angle.GetError() > 1.5f || gimbal.yaw_angle.GetError() < -1.5f) {
-        yawpid_switchflag = yaw1_pid;
-    } else {
-        yawpid_switchflag = yaw2_pid;
+        case pitch3_pid:
+            PitchPidDemo3();
+            break;
+        case pitch4_pid:
+            PitchPidDemo4();
+            break;
+        case pitch5_pid:
+            PitchPidDemo5();
+            break;
     }
 }
 

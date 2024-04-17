@@ -35,7 +35,7 @@ class Gimbal
     Pid yaw_angle;          /**< Array of Pid objects for angle control of pitch and yaw. */
     Pid yaw_speed;          /**< Array of Pid objects for speed control of pitch and yaw. */
     Pid pitch_angle;        /**< Pid object for angle control of pitch. */
-    Pid pitch_torque;       /**< Pid object for torque control of pitch. */
+    Pid pitch_speed;        /**< Pid object for torque control of pitch. */
     DjiMotor yaw_motor;     /**< Array of DjiMotor objects for controlling the motors of the gimbal. */
     DMMotor pitch_motor;    /**< DMMotor object for controlling the pitch motor. */
     float yaw_output_speed; /**< Array of output speeds for the motors. */

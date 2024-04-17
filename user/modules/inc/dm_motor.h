@@ -23,14 +23,14 @@
 /* Exported macro ------------------------------------------------------------*/
 #define P_MIN -12.5   // 位置最小值
 #define P_MAX 12.5    // 位置最大值
-#define V_MIN -45     // 速度最小值
-#define V_MAX 45      // 速度最大值
+#define V_MIN -630     // 速度最小值
+#define V_MAX 630      // 速度最大值
 #define KP_MIN 0.0    // Kp最小值
 #define KP_MAX 500.0  // Kp最大值
 #define KD_MIN 0.0    // Kd最小值
 #define KD_MAX 5.0    // Kd最大值
-#define T_MIN -18     // 转矩最大值
-#define T_MAX 18      // 转矩最小值
+#define T_MIN -20     // 转矩最大值
+#define T_MAX  20     // 转矩最小值
 
 /* Exported constants --------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/

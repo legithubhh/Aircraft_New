@@ -38,6 +38,11 @@ void PidSetInitial();
 void PidAdjust();
 void YawPidDemo1();
 void YawPidDemo2();
+void PitchPidDemo1();
+void PitchPidDemo2();
+void PitchPidDemo3();
+void PitchPidDemo4();
+void PitchPidDemo5();
 
 void RemoteAimingTargetSet();
 void KeymouseAimingTargetSet();

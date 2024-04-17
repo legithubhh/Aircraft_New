@@ -36,8 +36,8 @@ void Gimbal::PidInit()
 {
     yaw_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
     yaw_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 1500, 0, 0, 0, 0);
-    pitch_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
-    pitch_torque.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
+    pitch_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT  |PID_DERIVATIVE_FILTER, 0.f, 0, 0, 0, 0);
+    pitch_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT  |PID_DERIVATIVE_FILTER, 0.3f, 0, 0, 0, 0);
 }
 
 /**
@@ -59,21 +59,19 @@ void Gimbal::MotorInit()
 }
 
 /**
- * @brief Controls the gimbal.
+ * @brief Controls the gimbal.  pitch_angle.Calculate()
  */
 void Gimbal::Control()
 {
     yaw_angle.SetMeasure(INS.YawTotalAngle);
-
     yaw_speed.SetRef(yaw_angle.Calculate());
-
     yaw_speed.SetMeasure(INS.Gyro[YAW_AXIS]);
-
     yaw_output_speed = yaw_speed.Calculate();
 
     pitch_angle.SetMeasure(INS.Roll);
-
-    pitch_output_torque = pitch_motor.GetTorqueTarget();
+    pitch_speed.SetRef(pitch_angle.Calculate());
+    pitch_speed.SetMeasure(INS.Gyro[ROLL_AXIS]);
+    pitch_output_torque = -pitch_speed.Calculate();//加前馈
 }
 
 /**
@@ -85,12 +83,7 @@ void Gimbal::Control()
  */
 void Gimbal::SetPitchPosition(float _ang)
 {
-    pitch_set_real=_ang;
-    pitch_insreal=-INS.Roll;
-    pitch_dmreal=Math::RadToDeg(pitch_motor.GetAngle());
-    pitch_err=pitch_set_real-pitch_insreal;
-    pitch_offset = Math::DegToRad(-INS.Roll) - pitch_motor.GetAngle();
-    pitch_angle.SetRef(Math::DegToRad(_ang)-pitch_offset);
+    pitch_angle.SetRef(_ang);
 }
 
 /**

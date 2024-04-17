@@ -58,9 +58,72 @@ void PidSetInitial()
     /**
      * Pitch轴DM电机的PID参数初始化
      */
-    gimbal.pitch_angle.Init(0.1f, 0.f, 0.f, 1.f * 3.f, 0.0f);//输出限幅控制最大力矩
-    gimbal.pitch_torque.Init(1.f, 0.f, 0.f, 1.f * 3.f, 0.0f);//调整最大力矩
+    gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 1.f * 1.f, 0.0f);       // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.3f, 0.05f, 0.007f, 0.3f * 1.f, 0.0f);  // 输出限幅控制最大力矩 
 
+    // gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 1.f * 1.f, 0.0f);       // 输出限幅控制最大速度
+    // gimbal.pitch_speed.Init(0.3f, 0.05f, 0.0075f, 0.3f * 1.f, 0.0f);// 输出限幅控制最大力矩 未加滤波
+}
+
+/**
+ * @brief       遥控模式——仰角Pitch轴模式1:当Pitch轴为接近目标值时，减小双环KP，减少KD，避免超调；增大KI，进一步弥补静差，提高控制精度。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void PitchPidDemo1()
+{
+    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+}
+
+/**
+ * @brief       遥控模式——仰角Pitch轴模式2:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void PitchPidDemo2()
+{
+    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+}
+
+/**
+ * @brief       遥控模式——俯角Pitch轴模式3:为方便调节，Pitch轴调节过程将模式3阶段设置为俯角调试起始阶段。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void PitchPidDemo3()
+{
+    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+}
+
+/**
+ * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void PitchPidDemo4()
+{
+    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+}
+
+/**
+ * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ * @brief       同时最终输出应该控制上限，避免过冲引发震荡。
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void PitchPidDemo5()
+{
+    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
 }
 
 /**
@@ -87,7 +150,7 @@ void YawPidDemo1()
  */
 void YawPidDemo2()
 {
-    gimbal.yaw_angle.Init(66.f, 0.f, 1.85f, 99.f * 1.f, 0.f);//输出限幅控制最大速度
+    gimbal.yaw_angle.Init(66.f, 0.f, 1.85f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
     gimbal.yaw_speed.Init(66.f, 0.f, 1.85f, 6534.f * 1.f, 0.f);
     gimbal.yaw_speed.i_out_ = 0;
 }
@@ -290,7 +353,7 @@ void GimbalStop1TargetSet()
         gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
     }
     VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 8.0f);    // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为8度
-    gimbal.SetPitchPosition(gimbaltarget.pitch_target);  // 根据实际情况调整正负号
+    gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 根据实际情况调整正负号
 
     // Yaw轴目标值设置
     if (remote.GetCh2() < 2.f && remote.GetCh2() > -2.f) {

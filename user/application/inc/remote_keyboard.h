@@ -62,15 +62,29 @@ typedef enum {
     base_pid = 0,
 
     /**
-     * Yaw模式1
+     * Pitch模式1
      */
-
-    yaw1_pid = 1,
+    pitch1_pid = 1,
 
     /**
-     * Yaw模式2
+     * Pitch模式2
      */
-    yaw2_pid = 2,
+    pitch2_pid = 2,
+
+    /**
+     * Pitch模式3
+     */
+    pitch3_pid = 3,
+
+    /**
+     * Pitch模式4
+     */
+    pitch4_pid = 4,
+
+    /**
+     * Pitch模式5
+     */
+    pitch5_pid = 5,
 
 } PidSwitchMode;
 /* Exported variables --------------------------------------------------------*/
