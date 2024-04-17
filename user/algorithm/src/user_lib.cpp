@@ -236,4 +236,15 @@ float Dot3d(float *v1, float *v2)
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
+float RadToDeg(float _rad)//弧度转角度
+{
+    return _rad * 180.f / 3.1415926f;
+}
+
+float DegToRad(float _deg)//角度转弧度
+{
+    return _deg * 3.1415926f / 180.f;
+}
+
 }  // namespace Math
+

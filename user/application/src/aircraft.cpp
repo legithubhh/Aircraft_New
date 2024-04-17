@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -16,6 +16,7 @@
 #include "aircraft.h"
 
 #include "bsp_dwt.h"
+#include "cmsis_os.h"
 #include "gimbal.h"
 #include "motor_pidmodify.h"
 #include "referee.h"
@@ -60,35 +61,52 @@ void GimbalTask()
     // CAN1总线0X1FF对应电机ID，ID号1为拨弹盘2006电机
     // CAN1总线0X200对应电机ID，ID号1-4分别为摩擦轮3508电机1，摩擦轮3508电机2，Yaw轴3508电机，Pitch轴2006电机
 
+    // Pitch轴的DM电机需要先使能再发送数据
+    if (remote.GetS1() != 2 || remote.GetS2() != 2 && gimbal.pitch_motor.enanble_flag == 0) {
+        do {
+            gimbal.pitch_motor.Enable(&hcan1);  // 使能电机
+            osDelay(1);
+        } while (gimbal.pitch_motor.enanble_flag == 0);
+    }
+
+    // 在允许发弹的模式，左拨盘在上：关闭拨弹盘，打开摩擦轮；左拨盘在中或下：打开拨弹盘，打开摩擦轮
     if (remote.GetS1() == 1 && remote.GetS2() == 1) {
-        DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, 0);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
     if (remote.GetS1() != 1 && remote.GetS2() == 1) {
-        DjiMotorSend(&hcan1, 0x1FF, (int16_t)shoot.trig_output_, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
     if (remote.GetS1() == 1 && remote.GetS2() == 3) {
-        DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, 0);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
     if (remote.GetS1() != 1 && remote.GetS2() == 3) {
-        DjiMotorSend(&hcan1, 0x1FF, (int16_t)shoot.trig_output_, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
     if (remote.GetS1() != 2 && remote.GetS2() == 2) {
-        DjiMotorSend(&hcan1, 0x1FF, (int16_t)shoot.trig_output_, 0, 0, 0);
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.output_speed_[1], (int16_t)gimbal.output_speed_[0]);
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
     if (remote.GetS1() == 2 && remote.GetS2() == 2) {
         DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
         DjiMotorSend(&hcan1, 0x200, 0, 0, 0, 0);
+        // do {
+        //  gimbal.pitch_motor.SaveZero(&hcan1);  // 初始化时保存当前位置为零点
+        // } while ( gimbal.pitch_motor.zero_flag == 0);
+        do {
+            gimbal.pitch_motor.Disable(&hcan1);  // 失能电机
+            osDelay(1);
+        } while (gimbal.pitch_motor.enanble_flag == 1);
     }
+
     // 软件控制C620电调进入快速设置ID模式 (int16_t)shoot.trig_output_
     // CANC620IdSet();
 

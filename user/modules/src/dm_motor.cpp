@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -59,6 +59,7 @@ void DMMotor::Enable(CAN_HandleTypeDef* _phcan)
             }
         }
     }
+    enanble_flag = 1;
 }
 
 /** 
@@ -83,6 +84,7 @@ void DMMotor::Disable(CAN_HandleTypeDef* _phcan)
             }
         }
     }
+    enanble_flag =0;
 }
 
 /** 
@@ -107,6 +109,7 @@ void DMMotor::SaveZero(CAN_HandleTypeDef* _phcan)
             }
         }
     }
+    zero_flag = 1;
 }
 
 /** 
@@ -133,6 +136,41 @@ void DMMotor::DeleteError(CAN_HandleTypeDef* _phcan)
     }
 }
 
+void DMMotor::SetAngle(float _angle)
+{
+    set_angle = _angle;
+}
+
+void DMMotor::SetSpeed(float _speed)
+{
+    set_speed = _speed;
+}
+
+void DMMotor::SetTorque(float _torque)
+{
+    set_torque = _torque;
+}
+
+const ErrorCode DMMotor::GetErrorCode()
+{
+    return errorcode;
+}
+
+const float DMMotor::GetAngleTarget()
+{
+    return set_angle;
+}
+
+const float DMMotor::GetSpeedTarget()
+{
+    return set_speed;
+}
+
+const float DMMotor::GetTorqueTarget()
+{
+    return set_torque;
+}
+
 const float DMMotor::GetAngle()
 {
     return angle;
@@ -148,14 +186,13 @@ const float DMMotor::GetTorque()
     return torque;
 }
 
-void DMMotor::Init(CtrlMode _mode, uint16_t _CAN_id, uint32_t _idx, CAN_HandleTypeDef* _phcan, uint8_t _init)
+void DMMotor::Init(CtrlMode _mode, uint16_t _CAN_id, uint32_t _master_id, CAN_HandleTypeDef* _phcan)
 {
     mode = _mode;
     CAN_id = _CAN_id;
     CanInitConf conf;
-    init_ = _init;
     conf.hcan = _phcan;
-    conf.rx_id = _idx;
+    conf.rx_id = _master_id;
     pdji_motor_instance = pCanRegister(&conf);
 }
 
@@ -172,7 +209,7 @@ void DMMotor::Init(CtrlMode _mode, uint16_t _CAN_id, uint32_t _idx, CAN_HandleTy
  *       即可实现匀速转动;kp=0,kd=0，给定 t_ff 即可实现给定扭矩输出。KD不要给的很小，不然会出现震荡。
  * attention: 对位置进行控制时，kd 不能赋 0，否则会造成震荡甚至失控
  */
-void DMMotor::MITSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, float _vel,
+void DMMotor::MITSend(CAN_HandleTypeDef* _phcan, float _pos, float _vel,
                       float _KP, float _KD, float _torq)
 {
     TXJudge();
@@ -210,7 +247,7 @@ void DMMotor::MITSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, floa
  * Modify:2024/4/10 11:03 by Jason Li
  * @note:_pos 为控制的目标位置，_vel 是用来限定运动过程中的最大绝对速度值。
  */
-void DMMotor::PosSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, float _vel)
+void DMMotor::PosSend(CAN_HandleTypeDef* _phcan, float _pos, float _vel)
 {
     TXJudge();
     tx_conf.DLC = 0x08;
@@ -244,7 +281,7 @@ void DMMotor::PosSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, floa
  * 创建时间:2023/12/13 14:35:51
  * Modify:2024/4/10 11:03 by Jason Li
  */
-void DMMotor::SpeedSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _vel)  // 速度控制可以直接输出
+void DMMotor::SpeedSend(CAN_HandleTypeDef* _phcan,float _vel)  // 速度控制可以直接输出
 {
     TXJudge();
     tx_conf.DLC = 0x04;
@@ -276,16 +313,6 @@ void DMMotor::TXJudge()
     }
     tx_conf.IDE = CAN_ID_STD;
     tx_conf.RTR = CAN_RTR_DATA;
-}
-
-float RadToDeg(float _rad)//弧度转角度
-{
-    return _rad * 180.f / 3.1415926f;
-}
-
-float DegToRad(float _deg)//角度转弧度
-{
-    return _deg * 3.1415926f / 180.f;
 }
 
 static int FloatToUint(float x, float x_min, float x_max, int bits)

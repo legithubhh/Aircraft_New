@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -35,6 +35,8 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 typedef enum ErrorCode{
+        Disable = 0x0,//失能；
+        Enable = 0x1,//使能；
         OverVoltage = 0x8,//超压；
         UnderVoltage = 0x9,//欠压；
         OverCurrent = 0xA,//过电流；
@@ -55,16 +57,25 @@ class DMMotor
    public:
     uint16_t CAN_id;
     CanInstance *pdji_motor_instance;
+    uint8_t enanble_flag;//0为未使能，1为使能
+    uint8_t zero_flag;//0为未保存零点，1为保存零点
     void Update();
     void TXJudge();
-    void Init(CtrlMode _mode,uint16_t _CAN_id, uint32_t _idx, CAN_HandleTypeDef* _phcan, uint8_t _init);
+    void Init(CtrlMode _mode, uint16_t _CAN_id, uint32_t _master_id, CAN_HandleTypeDef* _phcan);
     void Enable(CAN_HandleTypeDef* _phcan);
     void Disable(CAN_HandleTypeDef* _phcan);
     void SaveZero(CAN_HandleTypeDef* _phcan);
     void DeleteError(CAN_HandleTypeDef* _phcan);
-    void MITSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, float _vel, float _KP, float _KD, float _torq);
-    void PosSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _pos, float _vel);
-    void SpeedSend(CAN_HandleTypeDef* _phcan, uint16_t _idx, float _vel);
+    void MITSend(CAN_HandleTypeDef* _phcan, float _pos, float _vel, float _KP, float _KD, float _torq);
+    void PosSend(CAN_HandleTypeDef* _phcan, float _pos, float _vel);
+    void SpeedSend(CAN_HandleTypeDef* _phcan, float _vel);
+    void SetAngle(float _angle);
+    void SetSpeed(float _speed);
+    void SetTorque(float _torque);
+    const ErrorCode GetErrorCode();
+    const float GetAngleTarget();
+    const float GetSpeedTarget();
+    const float GetTorqueTarget();
     const float GetAngle();
     const float GetSpeed();
     const float GetTorque();
@@ -72,18 +83,15 @@ class DMMotor
    private:
     CtrlMode mode;
     ErrorCode errorcode;
+    float set_angle, set_speed, set_torque;//发送给电机的目标值，单位需为rad,rad/s,Nm
     float angle, speed, torque;//单位分别为rad,rad/s,Nm
     uint8_t temperatureMOS;//表示驱动上 MOS 的平均温度，单位℃
     uint8_t temperatureRotor;//表示电机内部线圈的平均温度，单位℃
-    uint8_t init_;
     CAN_TxHeaderTypeDef tx_conf;
 
 };
 /* Exported variables --------------------------------------------------------*/
-extern DMMotor pitch_motor;
 /* Exported function prototypes ----------------------------------------------*/
-float RadToDeg(float _rad);
-float DegToRad(float _deg);
 #endif
 
 #ifdef __cplusplus

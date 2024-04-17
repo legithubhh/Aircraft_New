@@ -14,8 +14,10 @@
  */
 /* Includes ------------------------------------------------------------------*/
 #include "gimbal.h"
+
 #include "ins.h"
 #include "user_lib.h"
+#include  "bsp_dwt.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -32,10 +34,10 @@ static void YawMotorCallback();
  */
 void Gimbal::PidInit()
 {
-    angle_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 100, 0, 0, 0, 0);
-    speed_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 3000, 0, 0, 0, 0);
-    angle_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
-    speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 1500, 0, 0, 0, 0);
+    yaw_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
+    yaw_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 1500, 0, 0, 0, 0);
+    pitch_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
+    pitch_torque.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
 }
 
 /**
@@ -43,10 +45,17 @@ void Gimbal::PidInit()
  */
 void Gimbal::MotorInit()
 {
-    motor_[0].Init(0x204, &hcan1, ABSOLUTE_FLAG);
-    motor_[1].Init(0x203, &hcan1, ABSOLUTE_FLAG);
-    motor_[0].pdji_motor_instance->pCanCallBack = PitchMotorCallback;
-    motor_[1].pdji_motor_instance->pCanCallBack = YawMotorCallback;
+    yaw_motor.Init(0x203, &hcan1, ABSOLUTE_FLAG);
+    yaw_motor.pdji_motor_instance->pCanCallBack = YawMotorCallback;
+    pitch_motor.Init(MIT, 0x54, 0x32, &hcan1);
+    pitch_motor.pdji_motor_instance->pCanCallBack = PitchMotorCallback;
+    do {
+        pitch_motor.Enable(&hcan1);  // 使能电机
+    } while (pitch_motor.enanble_flag == 0);
+    // DWT_Delay(1.f);
+    // do {
+    //     pitch_motor.SaveZero(&hcan1);  // 初始化时保存当前位置为零点
+    // } while (pitch_motor.zero_flag == 0);
 }
 
 /**
@@ -54,17 +63,17 @@ void Gimbal::MotorInit()
  */
 void Gimbal::Control()
 {
-    angle_[0].SetMeasure(INS.Roll);//根据安装位置，数据Roll对应实际Pitch轴
-    angle_[1].SetMeasure(INS.YawTotalAngle);
+    yaw_angle.SetMeasure(INS.YawTotalAngle);
 
-    speed_[0].SetRef(angle_[0].Calculate());
-    speed_[1].SetRef(angle_[1].Calculate());
+    yaw_speed.SetRef(yaw_angle.Calculate());
 
-    speed_[0].SetMeasure(INS.Gyro[ROLL_AXIS]);//速度测量值为陀螺仪角速度，而不是电机速度
-    speed_[1].SetMeasure(INS.Gyro[YAW_AXIS]);
+    yaw_speed.SetMeasure(INS.Gyro[YAW_AXIS]);
 
-    output_speed_[0] = -speed_[0].Calculate();//根据实际情况调整正负号
-    output_speed_[1] = speed_[1].Calculate();
+    yaw_output_speed = yaw_speed.Calculate();
+
+    pitch_angle.SetMeasure(INS.Roll);
+
+    pitch_output_torque = pitch_motor.GetTorqueTarget();
 }
 
 /**
@@ -76,7 +85,12 @@ void Gimbal::Control()
  */
 void Gimbal::SetPitchPosition(float _ang)
 {
-    angle_[0].SetRef(_ang);
+    pitch_set_real=_ang;
+    pitch_insreal=-INS.Roll;
+    pitch_dmreal=Math::RadToDeg(pitch_motor.GetAngle());
+    pitch_err=pitch_set_real-pitch_insreal;
+    pitch_offset = Math::DegToRad(-INS.Roll) - pitch_motor.GetAngle();
+    pitch_angle.SetRef(Math::DegToRad(_ang)-pitch_offset);
 }
 
 /**
@@ -86,15 +100,14 @@ void Gimbal::SetPitchPosition(float _ang)
  */
 void Gimbal::SetYawPosition(float _ang)
 {
-    angle_[1].SetRef(_ang);
+    yaw_angle.SetRef(_ang);
 }
-
 /**
  * @brief Callback function for the pitch motor.
  */
 static void PitchMotorCallback()
 {
-    gimbal.motor_[0].Update();
+    gimbal.pitch_motor.Update();  // 更新电机数据，包括角度、速度、电流等，以及错误码等信息，以便后续处理，如清除错误等操作
 }
 
 /**
@@ -102,5 +115,5 @@ static void PitchMotorCallback()
  */
 static void YawMotorCallback()
 {
-    gimbal.motor_[1].Update();
+    gimbal.yaw_motor.Update();
 }

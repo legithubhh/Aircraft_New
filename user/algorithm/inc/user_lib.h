@@ -46,6 +46,8 @@ float *Norm3d(float *v);
 float NormOf3d(float *v);
 void Cross3d(float *v1, float *v2, float *res);
 float Dot3d(float *v1, float *v2);
+float RadToDeg(float _rad);
+float DegToRad(float _deg);
 };  // namespace Math
 /* Exported variables --------------------------------------------------------*/
 /* Exported function prototypes ----------------------------------------------*/

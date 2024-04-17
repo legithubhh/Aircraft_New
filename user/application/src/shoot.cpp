@@ -49,16 +49,16 @@ static void TriggerMotorCallback();
 
 void Shoot::PidInit()
 {
-    fric_speed_[0].Inprovement(PID_IMPROVE_NONE, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-    fric_speed_[1].Inprovement(PID_IMPROVE_NONE, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    fric_speed_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 0.f, 0.0f, 0.0f, 0.0f, 0.0f);
+    fric_speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 0.f, 0.0f, 0.0f, 0.0f, 0.0f);
     trigger_pos_.Inprovement(PID_IMPROVE_NONE, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     trigger_speed_.Inprovement(PID_IMPROVE_NONE, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void Shoot::MotorInit()
 {
-    fric_motor_[0].Init(0x201, &hcan1, ABSOLUTE_FLAG);
-    fric_motor_[1].Init(0x202, &hcan1, ABSOLUTE_FLAG);
+    fric_motor_[0].Init(0x201, &hcan1, ABSOLUTE_FLAG);//左摩擦轮
+    fric_motor_[1].Init(0x202, &hcan1, ABSOLUTE_FLAG);//右摩擦轮
     trigger_motor_.Init(0x205, &hcan1, RELATIVE_FLAG);
     fric_motor_[0].pdji_motor_instance->pCanCallBack = LeftFricMotorCallback;
     fric_motor_[1].pdji_motor_instance->pCanCallBack = RightFricMotorCallback;

@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -34,6 +34,7 @@ typedef enum {
      */
     CAN_GIMBAL_SEND_ID = 0x200,
     CAN_GIMBAL_SEND_ELSE_ID = 0x1FF,
+    CAN_PITCH_POS_DM_ID = 0x154,
 
     /**
      * 分别对应三个3508和两个2006报文ID
@@ -41,7 +42,7 @@ typedef enum {
     CAN_FRICTION1_3508_ID = 0x201,
     CAN_FRICTION2_3508_ID = 0x202,
     CAN_YAW_3508_ID = 0x203,
-    CAN_PITCH_2006_ID = 0x204,
+    CAN_PITCH_4310_ID = 0x32,
     CAN_TRIGGER_2006_ID = 0x205,
 
     /**
@@ -61,40 +62,15 @@ typedef enum {
     base_pid = 0,
 
     /**
-     * Pitch模式1
-     */
-    pitch1_pid = 1,
-
-    /**
-     * Pitch模式2
-     */
-    pitch2_pid = 2,
-
-    /**
-     * Pitch模式3
-     */
-    pitch3_pid = 3,
-
-    /**
-     * Pitch模式4
-     */
-    pitch4_pid = 4,
-
-    /**
-     * Pitch模式5
-     */
-    pitch5_pid = 5,
-
-    /**
      * Yaw模式1
      */
 
-    yaw1_pid = 6,
+    yaw1_pid = 1,
 
     /**
      * Yaw模式2
      */
-    yaw2_pid = 7
+    yaw2_pid = 2,
 
 } PidSwitchMode;
 /* Exported variables --------------------------------------------------------*/

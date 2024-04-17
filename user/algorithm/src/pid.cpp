@@ -82,7 +82,7 @@ float Pid::Calculate()
 }
 
 /**
- * @brief Performs trapezoidal integration for the PID controller.
+ * @brief Performs trapezoidal integration for the PID controller.梯形积分
  *
  * This function calculates the integral term of the PID controller using the trapezoidal integration method.
  *
@@ -94,7 +94,7 @@ void Pid::TrapezoidIntergral()
 }
 
 /**
- * @brief Changes the integration rate for the PID controller.
+ * @brief Changes the integration rate for the PID controller.改变积分速率
  */
 void Pid::ChangingIntegratioRate()
 {
@@ -111,7 +111,7 @@ void Pid::ChangingIntegratioRate()
 }
 
 /**
- * @brief Limits the integral term of the PID controller.
+ * @brief Limits the integral term of the PID controller.积分限幅
  */
 void Pid::IntegralLimit()
 {
@@ -135,7 +135,7 @@ void Pid::IntegralLimit()
 }
 
 /**
- * @brief Applies the derivative on measurement control strategy in the PID algorithm.
+ * @brief Applies the derivative on measurement control strategy in the PID algorithm.微分环节
  *
  * This function calculates the derivative term of the PID controller based on the rate of change of the process variable.
  * The derivative term is subtracted from the control output to counteract sudden changes in the process variable.
@@ -148,7 +148,7 @@ void Pid::DerivativeOnMeasurement()
 }
 
 /**
- * @brief Applies a derivative filter to the PID controller.
+ * @brief Applies a derivative filter to the PID controller.微分滤波
  *
  * This function applies a derivative filter to the PID controller.
  * It is used to calculate the derivative term of the PID controller
@@ -160,11 +160,10 @@ void Pid::DerivativeFilter()
 }
 
 /**
- * @brief Applies the output filter to the PID controller's output.
- *
- * This function is responsible for applying the output filter to the PID controller's output.
- * It performs any necessary calculations or transformations to ensure that the output meets the desired criteria.
- *
+ * @brief Applies the output filter to the PID controller's output.输出滤波
+ *在这个表达式中，d_out_（当前输出）和 last_d_out_（上一个输出）的权重由 derivative_lpf_rc_ 和 dt 决定。这就是一阶低通滤波器的核心：通过加权平均当前和过去的值来平滑输出。
+ *时间常数 derivative_lpf_rc_ 控制了滤波器的平滑程度。较大的 derivative_lpf_rc_ 值意味着对过去值的权重更大，因此滤波效果更显著，输出更加平滑；而较小的值则更接近于当前值，滤波效果较弱。
+ *通过这种方式，一阶低通滤波器能够在保留信号基本特征的同时，减少高频噪声的影响，提高信号的信噪比，使其更适合用于控制系统或数据分析中。
  * @return void
  */
 void Pid::OutputFilter()
@@ -173,7 +172,7 @@ void Pid::OutputFilter()
 }
 
 /**
- * @brief Sets the output limit for the PID controller.
+ * @brief Sets the output limit for the PID controller.输出限幅
  */
 void Pid::OutputLimit()
 {

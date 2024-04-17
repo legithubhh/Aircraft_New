@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -36,11 +36,6 @@ typedef struct
 /* Exported function prototypes ----------------------------------------------*/
 void PidSetInitial();
 void PidAdjust();
-void PitchPidDemo1();
-void PitchPidDemo2();
-void PitchPidDemo3();
-void PitchPidDemo4();
-void PitchPidDemo5();
 void YawPidDemo1();
 void YawPidDemo2();
 

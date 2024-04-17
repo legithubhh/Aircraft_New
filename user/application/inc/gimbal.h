@@ -20,11 +20,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "dji_motor.h"
+#include "dm_motor.h"
 #include "pid.h"
 /* Exported macro ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define YAW 1;
-#define PITCH 0;
 /* Exported types ------------------------------------------------------------*/
 
 /**
@@ -33,11 +32,21 @@
 class Gimbal
 {
    public:
-    Pid angle_[2];      /**< Array of Pid objects for angle control of pitch and yaw. */
-    Pid speed_[2];      /**< Array of Pid objects for speed control of pitch and yaw. */
-    DjiMotor motor_[2]; /**< Array of DjiMotor objects for controlling the motors of the gimbal. */
-        float output_speed_[2]; /**< Array of output speeds for the motors. */
-
+    Pid yaw_angle;          /**< Array of Pid objects for angle control of pitch and yaw. */
+    Pid yaw_speed;          /**< Array of Pid objects for speed control of pitch and yaw. */
+    Pid pitch_angle;        /**< Pid object for angle control of pitch. */
+    Pid pitch_torque;       /**< Pid object for torque control of pitch. */
+    DjiMotor yaw_motor;     /**< Array of DjiMotor objects for controlling the motors of the gimbal. */
+    DMMotor pitch_motor;    /**< DMMotor object for controlling the pitch motor. */
+    float yaw_output_speed; /**< Array of output speeds for the motors. */
+    float pitch_output_pos;
+    float pitch_output_speed;
+    float pitch_output_torque;
+    float pitch_offset;  // 因为陀螺仪返回值与达妙电机的返回值不一样，而我们真正需要参考的是陀螺仪的返回值，所以需要一个偏移量来控制达妙电机抵消偏差
+    float pitch_insreal;
+    float pitch_dmreal;
+    float pitch_set_real;
+    float pitch_err;
     /**
      * @brief Controls the gimbal system.
      */
