@@ -52,17 +52,25 @@ void PidSetInitial()
     /**
      * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.yaw_angle.Init(40.f, 0.f, 0.f, 80.f * 5.f, 0.0f);
-    gimbal.yaw_speed.Init(20.f, 10.f, 0.f, 3000.f * 1.f, 0.0f);
+    gimbal.yaw_angle.Init(50.f, 0.f, 1.95f, 50.f * 1.5f, 0.f);  // 输出限幅控制最大速度
+    gimbal.yaw_speed.Init(50.f, 0.f, 1.95f, 3750.f * 1.f, 0.f);
+
+    // gimbal.yaw_angle.Init(66.f, 0.f, 2.05f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
+    // gimbal.yaw_speed.Init(66.f, 0.f, 2.05f, 6534.f * 1.f, 0.f);
+
+    // Kp越大，俯仰角抖动越厉害，Kd大了可能导致在稳定后出现自震荡，小了则可能抑制不了比例环节导致震荡。向左转抖动比向右转厉害
 
     /**
      * Pitch轴DM电机的PID参数初始化
      */
-    gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 1.f * 1.f, 0.0f);       // 输出限幅控制最大速度
-    gimbal.pitch_speed.Init(0.3f, 0.05f, 0.007f, 0.3f * 1.f, 0.0f);  // 输出限幅控制最大力矩 
+    gimbal.pitch_angle.Init(2.f, 0.f, 0.025f, 1.f * 1.f, 0.0f);      // 输出限幅控制最大速度
+    gimbal.pitch_speed.Init(0.15f, 0.75f, 0.01f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
 
-    // gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 1.f * 1.f, 0.0f);       // 输出限幅控制最大速度
-    // gimbal.pitch_speed.Init(0.3f, 0.05f, 0.0075f, 0.3f * 1.f, 0.0f);// 输出限幅控制最大力矩 未加滤波
+    // gimbal.pitch_angle.Init(2.f, 0.f, 0.025f, 1.f * 1.f, 0.0f);      // 输出限幅控制最大速度
+    // gimbal.pitch_speed.Init(0.1f, 0.5f, 0.01f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+
+    // gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 2.f * 1.f, 0.0f);      // 输出限幅控制最大速度
+    // gimbal.pitch_speed.Init(0.3f, 0.05f, 0.007f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
 }
 
 /**
@@ -125,55 +133,6 @@ void PitchPidDemo5()
     gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
     gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
 }
-
-/**
- * @brief       遥控模式——Yaw轴模式1:当yaw轴为接近目标值时，减小双环KP，避免超调。增加KD，快速抑制震荡。增加KI，避免输出不够而卡住。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void YawPidDemo1()
-{
-    gimbal.yaw_angle.Init(35.f, 0.f, 2.5f, 80.f * 1.75f, 0.f);
-    gimbal.yaw_speed.Init(10.f, 20.f, 5.f, 3000.f * 0.6f, 0.f);
-}
-
-// gimbal.yaw_speed.Init(10.f, 20.f, 5.f, 3000.f * 0.6f, 0.f);
-
-// gimbal.yaw_speed.Init(10.f, 10.f, 5.f, 3000.f * 0.6f, 0.f);
-
-/**
- * @brief       遥控模式——Yaw轴模式2:当yaw轴更为接近目标值时，增大双环KP，增加KD，增强抗干扰能力；取消积分，避免静态干扰。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void YawPidDemo2()
-{
-    gimbal.yaw_angle.Init(66.f, 0.f, 1.85f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(66.f, 0.f, 1.85f, 6534.f * 1.f, 0.f);
-    gimbal.yaw_speed.i_out_ = 0;
-}
-
-// gimbal.yaw_angle.Init(75.f, 0.f, 1.54f, 112.5f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(75.f, 0.f, 1.54f, 8437.5f * 1.f, 0.f);
-
-// gimbal.yaw_angle.Init(72.f, 0.f, 1.4f, 108.f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(72.f, 0.f, 1.4f, 7776.f * 1.f, 0.f);
-
-// gimbal.yaw_angle.Init(70.f, 0.f, 1.31f, 105.f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(70.f, 0.f, 1.31f, 7350.f * 1.f, 0.f);
-
-// gimbal.yaw_angle.Init(69.f, 0.f, 1.215f, 103.5f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(69.f, 0.f, 1.215f, 7141.5f * 1.f, 0.f);上限Kp，防止震荡与抵抗外力（稳定性）最优性价比
-
-// gimbal.yaw_angle.Init(66.f, 0.f, 0.9f, 99.f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(66.f, 0.f, 0.9f, 6534.f * 1.f, 0.f);
-
-// gimbal.yaw_angle.Init(50.f, 0.f, 0.55f, 75.f * 1.f, 0.f);
-// gimbal.yaw_speed.Init(50.f, 0.f, 0.55f, 3750.f * 1.f, 0.f);
-
-// Kp越大，俯仰角抖动越厉害，Kd大了可能导致在稳定后出现自震荡，小了则可能抑制不了比例环节导致震荡。向左转抖动比向右转厉害
 
 /**
  * @brief       开启云台电机PID输出计算
