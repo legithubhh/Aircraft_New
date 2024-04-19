@@ -138,12 +138,12 @@ void PidAdjustByError()
     // 当Pitch轴误差达到一定范围时，更改PID参数进行自适应调节
 
     // if (gimbal.pitch_angle.GetMeasure() < 0.5) {
-    if (gimbal.pitch_angle.GetError() > 2.5f || gimbal.pitch_angle.GetError() < -2.5f) {
-        pitchpid_switchflag = base_pid;
-    } else if (gimbal.pitch_angle.GetError() > 1.f || gimbal.pitch_angle.GetError() < -1.f) {
-        pitchpid_switchflag = base_pid;
+    if (gimbal.pitch_angle.GetError() > 5.f || gimbal.pitch_angle.GetError() < -5.f) {
+        pitchpid_switchflag = pitch2_pid;
+    } else if (gimbal.pitch_angle.GetError() > 1.5f || gimbal.pitch_angle.GetError() < -1.5f) {
+        pitchpid_switchflag = pitch2_pid;
     } else {
-        pitchpid_switchflag = base_pid;
+        pitchpid_switchflag = pitch2_pid;
     }
     // } else {
     //     if (gimbal.pitch_angle.GetError() > 3.5f || gimbal.pitch_angle.GetError() < -3.5f) {

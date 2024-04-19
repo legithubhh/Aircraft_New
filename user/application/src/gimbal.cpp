@@ -15,9 +15,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gimbal.h"
 
+#include "bsp_dwt.h"
 #include "ins.h"
 #include "user_lib.h"
-#include  "bsp_dwt.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -36,8 +36,8 @@ void Gimbal::PidInit()
 {
     yaw_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 0, 0, 0, 0, 0);
     yaw_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_ON_MEASUREMENT, 1500, 0, 0, 0, 0);
-    pitch_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT  |PID_DERIVATIVE_FILTER, 0.f, 0, 0, 0, 0);
-    pitch_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT  |PID_DERIVATIVE_FILTER, 0.5f, 0, 0, 0, 1);
+    pitch_angle.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_FILTER, 1.f, 0, 0, 0, 10);
+    pitch_speed.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT | PID_DERIVATIVE_FILTER, 0.5f, 0, 0, 0, 20);
 }
 
 /**
@@ -71,7 +71,7 @@ void Gimbal::Control()
     pitch_angle.SetMeasure(INS.Roll);
     pitch_speed.SetRef(pitch_angle.Calculate());
     pitch_speed.SetMeasure(INS.Gyro[ROLL_AXIS]);
-    pitch_output_torque = -pitch_speed.Calculate();//加前馈
+    pitch_output_torque = -pitch_speed.Calculate();  // 加前馈
 }
 
 /**
