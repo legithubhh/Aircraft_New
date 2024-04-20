@@ -411,6 +411,7 @@ class Referee
 
 /* Exported variables --------------------------------------------------------*/
 extern Referee referee;
+extern uint8_t referee_key_press[16];
 /* Exported function prototypes ----------------------------------------------*/
 
 #endif

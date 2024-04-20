@@ -41,13 +41,13 @@ void PidSetInitial()
     /**
      * 左右摩擦轮3508电机的PID参数初始化
      */
-    shoot.fric_speed_[0].Init(8.f, 0.f, 0.f, 1680.f * 4.f, 0.f);  // 限定最大值，防止突震，结合调试确定，参考速度闭环输出曲线 最大输出-16384-16384
-    shoot.fric_speed_[1].Init(8.f, 0.f, 0.f, 1680.f * 4.f, 0.f);
+    shoot.fric_speed_[0].Init(10.f, 0.f, 0.f, 1680.f * 4.f, 0.f);  // 限定最大值，防止突震，结合调试确定，参考速度闭环输出曲线 最大输出-16384-16384
+    shoot.fric_speed_[1].Init(10.f, 0.f, 0.f, 1680.f * 4.f, 0.f);
     /**
      * 拨弹盘2006电机的PID参数初始化
      */
-    shoot.trigger_pos_.Init(50.f, 0.f, 0.f, 216.f * 10.f, 0.f);   // 依据减速比(36/1*60)=2160*n得n转每秒（最快）
-    shoot.trigger_speed_.Init(6.f, 0.f, 0.f, 1000.f * 6.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
+    shoot.trigger_pos_.Init(10.f, 0.f, 0.f, 1.f * 2160.f, 0.f);   // 依据减速比(36/1*60)=2160*n得n转每秒（最快）
+    shoot.trigger_speed_.Init(5.f, 0.f, 0.f, 1000.f * 6.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
 
     /**
      * Yaw轴3508电机的PID参数初始化
@@ -70,7 +70,7 @@ void PidSetInitial()
     // gimbal.pitch_speed.Init(0.25f, 1.f, 0.05f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩    微分滤波50
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.02f, 2.f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波1
-    // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.008f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1 稳定3，加强抗干扰能力0
+    // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.008f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1 稳定3，定在原位的能力0
 
     //  gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 2.f * 1.f, 0.0f);      // 输出限幅控制最大速度
     //  gimbal.pitch_speed.Init(0.3f, 0.05f, 0.007f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
@@ -93,21 +93,21 @@ void PitchPidDemo1()
 }
 
 /**
- * @brief       遥控模式——仰角Pitch轴模式2:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ * @brief       遥控模式——仰角Pitch轴模式2:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
  *   @arg       None
  * @retval      None
  * @note        None
  */
 void PitchPidDemo2()
 {
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
-    gimbal.pitch_speed.Init(0.35f, 0.3f, 0.2f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20
+    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
+    gimbal.pitch_speed.Init(0.35f, 0.3f, 0.12f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
-    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，加强抗干扰能力2 超调0 震荡1
+    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0 震荡1
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.15f, 2.f * 1.f, 0.0f);       // 输出限幅控制最大速度  微分滤波1
-    // gimbal.pitch_speed.Init(0.3f, 0.75f, 0.3f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 稳定1，加强抗干扰能力1 超调1 震荡0
+    // gimbal.pitch_speed.Init(0.3f, 0.75f, 0.3f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 稳定1，定在原位的能力1 超调1 震荡0
 
     // gimbal.pitch_angle.Init(2.5f, 1.f, 0.1f, 2.5f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波50
     // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.05f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1
@@ -135,7 +135,7 @@ void PitchPidDemo3()
 }
 
 /**
- * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
  *   @arg       None
  * @retval      None
  * @note        None
@@ -147,7 +147,7 @@ void PitchPidDemo4()
 }
 
 /**
- * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强抗干扰能力；增大KI，最大弥补静差，提高控制精度。
+ * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
  * @brief       同时最终输出应该控制上限，避免过冲引发震荡。
  *   @arg       None
  * @retval      None
@@ -180,7 +180,7 @@ void MotorStart()
 void RemoteAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 100.f * 2.f;  // =6000 无减速箱，依据n*60得n转每秒
+    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6900 无减速箱，依据n*60得n转每秒 115.f * 60.f 摩擦轮温度足够高后达到30m/s射速
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
@@ -189,10 +189,9 @@ void RemoteAimingTargetSet()
         gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (remote.GetS1() == 2) {
-        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     }
-
     /*位置式角度控制*/
 
     // // Pitch轴目标值设置
@@ -248,12 +247,20 @@ void RemoteAimingTargetSet()
 void KeymouseAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 0;  // =6000 无减速箱，依据n*60得n转每秒 100.f * 60.f
+    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒 
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
-    gimbaltarget.turn_magazine_target = 1.125f * 60.0f * 36.0f;  //=2430 依据减速比n*60*（36/1）得n转每秒
-    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    if (remote.GetS1() == 1) {
+        gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (remote.GetS1() == 3) {
+        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (remote.GetS1() == 2) {
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    }
 
     // Pitch轴目标值设置
     pitch_target = remote.GetMouseY();
@@ -284,11 +291,11 @@ void KeymouseAimingTargetSet()
 void AutoAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 100.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
+    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
-    gimbaltarget.turn_magazine_target = 1000;
+    gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;
     shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
 
     // Pitch轴目标值设置

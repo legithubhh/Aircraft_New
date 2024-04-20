@@ -59,7 +59,7 @@ void Shoot::MotorInit()
 {
     fric_motor_[0].Init(0x201, &hcan1, ABSOLUTE_FLAG);//左摩擦轮
     fric_motor_[1].Init(0x202, &hcan1, ABSOLUTE_FLAG);//右摩擦轮
-    trigger_motor_.Init(0x205, &hcan1, RELATIVE_FLAG);
+    trigger_motor_.Init(0x204, &hcan1, RELATIVE_FLAG);
     fric_motor_[0].pdji_motor_instance->pCanCallBack = LeftFricMotorCallback;
     fric_motor_[1].pdji_motor_instance->pCanCallBack = RightFricMotorCallback;
     trigger_motor_.pdji_motor_instance->pCanCallBack = TriggerMotorCallback;

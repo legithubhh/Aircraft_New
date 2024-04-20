@@ -25,12 +25,9 @@
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint8_t trigger_flag;                          // 拨弹盘开关控制
-uint8_t fric_flag;                             // 摩擦轮状态标志
 uint8_t shoot_mode;                            // 射击模式标志
 PidSwitchMode pitchpid_switchflag = base_pid;  // 针对不同控制模式，在同一电机执行不同任务时，设置不同的PID参数
 /* External variables --------------------------------------------------------*/
-extern uint8_t remote_key_press[16];
-extern uint8_t referee_key_press[16];
 /* Private function prototypes -----------------------------------------------*/
 void PidFlagInit();
 void PidModeSwitch();
@@ -45,7 +42,6 @@ void ModeTask()
     // 右拨杆在上，遥控器控制模式
     if (remote.GetS2() == 1) {
         /*单发模式控制,与下面的代码只能存在一个*/
-        // fric_flag=1;
         // shoot_mode = 0;
         // RemoteDisconShootCtrl();
         // PidAdjust();
@@ -54,13 +50,11 @@ void ModeTask()
 
         /*左拨杆在上——只转摩擦轮模式，中——拨弹盘低速模式，下——高速模式或（遥控器切换到自瞄模式，需要使用时取消注释）*/
         // if (remote.GetS1() == 1 || remote.GetS1() == 3) {
-        fric_flag = 1;
         shoot_mode = 1;
         PidAdjust();
         RemoteAimingTargetSet();
         MotorStart();
         // } else {
-        //     fric_flag = 1;
         //     shoot_mode = 1;
         //     PidAdjust();
         //     AutoAimingTargetSet();
@@ -75,7 +69,6 @@ void ModeTask()
         referee.aerial_robot_support_data_.airforce_status = 2;  // 测试用
         referee.aerial_robot_support_data_.time_remain = 1;      // 测试用
         if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
-            fric_flag = 1;
             shoot_mode = 1;
             // 当键盘R键按下期间，键鼠模式切换到自瞄模式，松开换回键鼠手控模式
             if (remote_key_press[KEY_R] || referee_key_press[KEY_R] == 1) {
@@ -88,7 +81,6 @@ void ModeTask()
                 MotorStart();
             }
         } else {
-            fric_flag = 0;
             shoot_mode = 0;
             PidAdjust();
             GimbalStop2TargetSet();
@@ -99,7 +91,6 @@ void ModeTask()
 
     // 右拨杆在下，急停模式
     if (remote.GetS2() == 2) {
-        fric_flag = 0;
         shoot_mode = 0;
         // 左拨杆在上或中，发弹急停 OR 左拨杆在下，切换到全停模式（拨弹盘，摩擦轮目标速度设为0，双轴目标位置设为0度,输出强制为0,电机CAN信号直接发送0）
         if (remote.GetS1() == 1 || remote.GetS1() == 3) {

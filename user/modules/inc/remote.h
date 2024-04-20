@@ -110,6 +110,11 @@ class Remote_t
         return Pack_.press_r;
     }
 
+    int GetPressL()
+    {
+        return Pack_.press_l;
+    }
+
    private:
     DR16DatePack_t Pack_;
 };
