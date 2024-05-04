@@ -63,100 +63,23 @@ void PidSetInitial()
     /**
      * Pitch轴DM电机的PID参数初始化
      */
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.02f, 2.f * 1.f, 0.0f);       // 输出限幅控制最大速度  微分滤波50
-    gimbal.pitch_speed.Init(0.25f, 0.75f, 0.008f, 1.5f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波50
-
-    // gimbal.pitch_angle.Init(2.5f, 0.1f, 0.1f, 2.f * 1.f, 0.0f);       // 输出限幅控制最大速度  微分滤波50
-    // gimbal.pitch_speed.Init(0.25f, 1.f, 0.05f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩    微分滤波50
-
-    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.02f, 2.f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波1
-    // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.008f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1 稳定3，定在原位的能力0
-
-    //  gimbal.pitch_angle.Init(1.f, 0.f, 0.023f, 2.f * 1.f, 0.0f);      // 输出限幅控制最大速度
-    //  gimbal.pitch_speed.Init(0.3f, 0.05f, 0.007f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
-
-    // 位置环比例环节主输出并负责抵抗干扰，积分环节辅助输出，微分环节抑制超调，微分滤波防止突变；速度环积分环节主导输出，积分环节补充输出并负责抵抗干扰，微分滤波防止突变
-    // 增加微分环节，增加滤波系数，无法消除源于积分的震荡；减少微分环节，减少滤波系数，无法消除突变震荡；增大滤波系数可抑制突变，但无法消除源于积分的震荡，且会削弱微分系数的影响；
-    // 当位置环比例系数从2.0增大到2.5后，似乎无法调整，超出了上限。调整速度环比例系数还有上升空间
-}
-
-/**
- * @brief       遥控模式——仰角Pitch轴模式1:当Pitch轴为接近目标值时，减小双环KP，减少KD，避免超调；增大KI，进一步弥补静差，提高控制精度。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PitchPidDemo1()
-{
-    gimbal.pitch_angle.Init(2.5f, 3.f, 0.02f, 2.5f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波20
-    gimbal.pitch_speed.Init(0.25f, 0.75f, 0.01f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20
-}
-
-/**
- * @brief       遥控模式——仰角Pitch轴模式2:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PitchPidDemo2()
-{
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
-    gimbal.pitch_speed.Init(0.35f, 0.3f, 0.12f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
-
+    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 5.f * 1.f, 0.0f);      // 输出限幅控制最大速度  微分滤波10
+    gimbal.pitch_speed.Init(0.35f, 0.3f, 0.08f, 1.75f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0 震荡1
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.15f, 2.f * 1.f, 0.0f);       // 输出限幅控制最大速度  微分滤波1
     // gimbal.pitch_speed.Init(0.3f, 0.75f, 0.3f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 稳定1，定在原位的能力1 超调1 震荡0
 
-    // gimbal.pitch_angle.Init(2.5f, 1.f, 0.1f, 2.5f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波50
-    // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.05f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1
-
-    // gimbal.pitch_angle.Init(2.5f, 1.f, 0.01f, 2.5f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波1
-    // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.005f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波1
-
     // gimbal.pitch_angle.Init(2.5f, 3.f, 1.5f, 2.5f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.25f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 小幅KP震荡，源于微分
 
     // gimbal.pitch_angle.Init(2.5f, 3.f, 1.f, 2.5f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波50
     // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.15f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波50 大幅KP震荡，源于比例
-}
 
-/**
- * @brief       遥控模式——俯角Pitch轴模式3:为方便调节，Pitch轴调节过程将模式3阶段设置为俯角调试起始阶段。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PitchPidDemo3()
-{
-    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
-    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
-}
-
-/**
- * @brief       遥控模式——俯角Pitch轴模式4:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PitchPidDemo4()
-{
-    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
-    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
-}
-
-/**
- * @brief       遥控模式——俯角Pitch轴模式5:当Pitch轴更为接近目标值时，增大双环KP，增大，减少KD，增强定在原位的能力；增大KI，最大弥补静差，提高控制精度。
- * @brief       同时最终输出应该控制上限，避免过冲引发震荡。
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void PitchPidDemo5()
-{
-    gimbal.pitch_angle.Init(10.f, 0.f, 0.f, 10.f * 1.f, 0.0f);     // 输出限幅控制最大速度
-    gimbal.pitch_speed.Init(0.03f, 0.01f, 1.f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩
+    // 位置环比例环节主输出并负责抵抗干扰，积分环节辅助输出，微分环节抑制超调，微分滤波防止突变；速度环积分环节主导输出，积分环节补充输出并负责抵抗干扰，微分滤波防止突变
+    // 增加微分环节，增加滤波系数，无法消除源于积分的震荡；减少微分环节，减少滤波系数，无法消除突变震荡；增大滤波系数可抑制突变，但无法消除源于积分的震荡，且会削弱微分系数的影响；
+    // 当位置环比例系数从2.0增大到2.5后，似乎无法调整，超出了上限。调整速度环比例系数还有上升空间
 }
 
 /**

@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      yyyy-mm-dd      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -15,13 +15,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "client_UI.h"
 
+#include "crc.h"
 #include "ins.h"
-#include "referee.h"
 #include "string.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
 unsigned char UI_Seq;  // 包的序号
 uint16_t Robot_ID;
 uint16_t Cilent_ID;
@@ -50,14 +51,27 @@ char auto_aim[8] = "AutoAim";
 char da_fu[8] = "BIGBUFF";
 char xiao_fu[8] = "MINBUFF";
 
-TaskHandle_t UI_Handle;
 /* External variables --------------------------------------------------------*/
-/* 摩擦轮状态（ON为开启，OFF为停止）、发射模式（ON为连发，OFF为单发或停发）*/
-extern uint8_t shoot_mode;  // 发射模式
+/* 摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）*/
 extern uint8_t fric_flag;   // 摩擦轮状态
+extern uint8_t auto_flag;   // 自瞄状态
 /* Private function prototypes -----------------------------------------------*/
+void ID_Judge(void);
+void UI_init(void);
+void UI_PushUp_Graphs(uint8_t cnt, void *Graphs);
+void UI_PushUp_String(UI_String_t *String);
+void UI_PushUp_Delete(UI_Delete_t *Delete);
+void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y);
+unsigned char Get_CRC8_Check_Sum_UI(unsigned char *pchMessage, unsigned int dwLength, unsigned char ucCRC8);
+uint16_t Get_CRC16_Check_Sum_UI(uint8_t *pchMessage, uint32_t dwLength, uint16_t wCRC);
+void Circle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 Graph_Radius);
+void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y);
+void Float_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, float FloatData);
+void Char_Draw(String_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, char *Char_Data);
+void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_StartAngle, u32 Graph_EndAngle, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 x_Length, u32 y_Length);
 
-void Task_UI(void *pvParament)
+
+void UITask()
 {
     // 这里UI_PushUp_Counter判断都是很诡异的数字
     // 就是为了任务完整执行一次，只会发送一组UI数据
@@ -100,8 +114,8 @@ void Task_UI(void *pvParament)
         }
 
         if (UI_PushUp_Counter % 331 == 0) {
-            // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、发射模式（ON为连发，OFF为单发或停发）
-            Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Add, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nFusillade:\tOFF");
+            // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）
+            Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Add, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tOFF");
             UI_PushUp_String(&UI_String1);
             continue;
         }
@@ -113,14 +127,14 @@ void Task_UI(void *pvParament)
         }
 
         if (UI_PushUp_Counter % 21 == 0) {
-            if (shoot_mode == 0 && fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nFusillade:\tOFF");
-            } else if (shoot_mode == 1 && fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nFusillade:\tON");
-            } else if (shoot_mode == 1 && fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nFusillade:\tON");
-            } else if (shoot_mode == 0 && fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nFusillade:\tOFF");
+            if (auto_flag == 0 && fric_flag == 1) {
+                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tOFF");
+            } else if (auto_flag == 1 && fric_flag == 1) {
+                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tON");
+            } else if (auto_flag == 1 && fric_flag == 0) {
+                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tON");
+            } else if (auto_flag == 0 && fric_flag == 0) {
+                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tOFF");
             }
             UI_PushUp_String(&UI_String1);
             continue;

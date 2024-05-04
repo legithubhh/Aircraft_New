@@ -4,7 +4,7 @@
  * @brief     :
  * @history   :
  *  Version     Date            Author          Note
- *  V0.9.0      2024-03-28      <author>        1. <note>
+ *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
  *******************************************************************************
@@ -16,13 +16,15 @@
 #define __CLIENT_UI_H__
 
 #ifdef __cplusplus
-
-#include "stdarg.h"
+/* Includes ------------------------------------------------------------------*/
+#include "bsp_uart.h"
 #include "cmsis_os.h"
-#include "usart.h"
 #include "crc.h"
+#include "referee.h"
+#include "stdarg.h"
 #include "task.h"
-
+#include "usart.h"
+/* Exported macro ------------------------------------------------------------*/
 #pragma pack(1)  // 按1字节对齐
 
 #define __FALSE 100
@@ -99,6 +101,7 @@
 #define UI_Color_Black 7
 #define UI_Color_White 8
 
+/* Exported types ------------------------------------------------------------*/
 typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
@@ -211,25 +214,26 @@ typedef struct
     uint16_t CRC16;
 } UI_Delete_t;
 
+
+
+/* Exported variables --------------------------------------------------------*/
 extern Graph_Data G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15, G16, G17, G18, G19, G20, G21, G22;
 extern String_Data CH_Cap, CH_Shoot, CH_AIM, CH_user, CH_XTL_State;
 extern Float_Data F1_pitch, F2_cap;
-extern TaskHandle_t UI_Handle;
-
-void Task_UI(void *pvParament);
-void ID_Judge(void);
-void UI_init(void);
-void UI_PushUp_Graphs(uint8_t cnt, void *Graphs);
-void UI_PushUp_String(UI_String_t *String);
-void UI_PushUp_Delete(UI_Delete_t *Delete);
-void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y);
-unsigned char Get_CRC8_Check_Sum_UI(unsigned char *pchMessage, unsigned int dwLength, unsigned char ucCRC8);
-uint16_t Get_CRC16_Check_Sum_UI(uint8_t *pchMessage, uint32_t dwLength, uint16_t wCRC);
-void Circle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 Graph_Radius);
-void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y);
-void Float_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, float FloatData);
-void Char_Draw(String_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, char *Char_Data);
-void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_StartAngle, u32 Graph_EndAngle, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 x_Length, u32 y_Length);
-
+/* Exported function prototypes ----------------------------------------------*/
 #endif
-#endif  /* __CLIENT_UI_H__ */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* Includes ------------------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported types ------------------------------------------------------------*/
+/* Exported variables --------------------------------------------------------*/
+/* Exported function prototypes ----------------------------------------------*/
+void UITask();
+#ifdef __cplusplus
+}
+#endif
+#endif /* __CLIENT_UI_H__ */

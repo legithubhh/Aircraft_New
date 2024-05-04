@@ -57,35 +57,35 @@ typedef enum {
 
 // 命令码ID,用来判断接收的是什么数据
 typedef enum {
-    ID_game_state = 0x0001,                // 比赛状态数据
-    ID_game_result = 0x0002,               // 比赛结果数据
-    ID_game_robot_survivors = 0x0003,      // 比赛机器人血量数据
-    ID_event_data = 0x0101,                // 场地事件数据
-    ID_supply_projectile_action = 0x0102,  // 场地补给站动作标识数据
-    ID_referee_warning = 0x0104,           // 裁判警告数据
-    ID_dart_info = 0x0105,                       // 飞镖发射相关数据
-    ID_game_robot_state = 0x0201,          // 机器人状态数据
-    ID_power_heat_data = 0x0202,           // 实时功率热量数据
-    ID_game_robot_pos = 0x0203,            // 机器人位置数据
-    ID_buff_musk = 0x0204,                 // 机器人增益数据
-    ID_aerial_robot_support_data = 0x0205,       // 空中支援时间数据
-    ID_robot_hurt = 0x0206,                // 伤害状态数据
-    ID_shoot_data = 0x0207,                // 实时射击数据
-    ID_projectile_allowance = 0x0208,      // 允许发弹量
-    ID_rfid_status = 0x0209,               // RFID状态
-    ID_dart_client_cmd = 0x020A,                 // 飞镖选手端指令数据
-    ID_ground_robot_position = 0x020B,     // 地面机器人位置数据
-    ID_radar_mark_data = 0x020C,           // 雷达标记进度数据
-    ID_sentry_info = 0x020D,               // 哨兵自主决策信息同步
-    ID_radar_info = 0x020E,                // 雷达自主决策信息同步
-    ID_student_interactive = 0x0301,       // 机器人交互数据
-    ID_custom_robot_data = 0x0302,         // 自定义控制器与机器人交互数据
-    ID_map_command = 0x0303,               // 选手端小地图交互数据
-    ID_command_data = 0x0304,              // 键鼠遥控数据
-    ID_map_robot_data = 0x0305,            // 选手端小地图接收雷达数据
-    ID_custom_client_data = 0x0306,        // 自定义控制器与选手端交互数据
-    ID_map_data = 0x0307,                  // 选手端小地图接收哨兵数据
-    ID_custom_info = 0x0308,               // 选手端小地图接收机器人数据
+    ID_game_state = 0x0001,                 // 比赛状态数据
+    ID_game_result = 0x0002,                // 比赛结果数据
+    ID_game_robot_survivors = 0x0003,       // 比赛机器人血量数据
+    ID_event_data = 0x0101,                 // 场地事件数据
+    ID_supply_projectile_action = 0x0102,   // 场地补给站动作标识数据
+    ID_referee_warning = 0x0104,            // 裁判警告数据
+    ID_dart_info = 0x0105,                  // 飞镖发射相关数据
+    ID_game_robot_state = 0x0201,           // 机器人状态数据
+    ID_power_heat_data = 0x0202,            // 实时功率热量数据
+    ID_game_robot_pos = 0x0203,             // 机器人位置数据
+    ID_buff_musk = 0x0204,                  // 机器人增益数据
+    ID_aerial_robot_support_data = 0x0205,  // 空中支援时间数据
+    ID_robot_hurt = 0x0206,                 // 伤害状态数据
+    ID_shoot_data = 0x0207,                 // 实时射击数据
+    ID_projectile_allowance = 0x0208,       // 允许发弹量
+    ID_rfid_status = 0x0209,                // RFID状态
+    ID_dart_client_cmd = 0x020A,            // 飞镖选手端指令数据
+    ID_ground_robot_position = 0x020B,      // 地面机器人位置数据
+    ID_radar_mark_data = 0x020C,            // 雷达标记进度数据
+    ID_sentry_info = 0x020D,                // 哨兵自主决策信息同步
+    ID_radar_info = 0x020E,                 // 雷达自主决策信息同步
+    ID_student_interactive = 0x0301,        // 机器人交互数据
+    ID_custom_robot_data = 0x0302,          // 自定义控制器与机器人交互数据
+    ID_map_command = 0x0303,                // 选手端小地图交互数据
+    ID_command_data = 0x0304,               // 键鼠遥控数据
+    ID_map_robot_data = 0x0305,             // 选手端小地图接收雷达数据
+    ID_custom_client_data = 0x0306,         // 自定义控制器与选手端交互数据
+    ID_map_data = 0x0307,                   // 选手端小地图接收哨兵数据
+    ID_custom_info = 0x0308,                // 选手端小地图接收机器人数据
 } CmdID;
 
 typedef enum {
@@ -248,8 +248,8 @@ typedef struct
 /* ID: 0x0205  Byte:  1    空中支援时间数据 */
 typedef struct
 {
-    uint8_t airforce_status;//空中机器人状态（0 为正在冷却，1 为冷却完毕，2 为正在空中支援）
-    uint8_t time_remain;//此状态的剩余时间（单位为：秒，向下取整，即冷却时间剩余 1.9 秒时，此值为 1）
+    uint8_t airforce_status;  // 空中机器人状态（0 为正在冷却，1 为冷却完毕，2 为正在空中支援）
+    uint8_t time_remain;      // 此状态的剩余时间（单位为：秒，向下取整，即冷却时间剩余 1.9 秒时，此值为 1）
 } aerial_robot_support_data_t;
 
 /* ID: 0x0206  Byte:  1    伤害状态数据 */
@@ -388,7 +388,6 @@ class Referee
     UartInstance *p_instance_;
     void Update(uint8_t *_p_data);
     void Init(UART_HandleTypeDef *_p_huart);
-    void KeyProcessReferee();
 
     xFrameHeader FrameHeader;  // 接收到的帧头信息
     uint16_t CmdID;
@@ -406,12 +405,24 @@ class Referee
     ext_shoot_data_t shoot_data_;                              // 0x0207
     ext_SendClientData_t show_data_;                           // 客户端信息
     ext_CommunatianData_t commu_data;                          // 队友通信信息
-    ext_robot_command_t comma_data;                            // 图传链路
 };
 
+class RefKeyMouse
+{
+   public:
+    UartInstance *p_instance_;
+    void Update(uint8_t *_p_data);
+    void Init(UART_HandleTypeDef *_p_huart);
+    void KeyProcessUI();
+    uint8_t referee_key_press[16];
+
+    xFrameHeader FrameHeader;  // 接收到的帧头信息
+    uint16_t CmdID;
+    ext_robot_command_t comma_data;  // 图传链路
+};
 /* Exported variables --------------------------------------------------------*/
 extern Referee referee;
-extern uint8_t referee_key_press[16];
+extern RefKeyMouse ref_keymouse;
 /* Exported function prototypes ----------------------------------------------*/
 
 #endif

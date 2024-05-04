@@ -28,6 +28,7 @@
 #include "aircraft.h"
 #include "ins.h"
 #include "remote_keyboard.h"
+#include "client_UI.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +54,7 @@ osThreadId defaultTaskHandle;
 osThreadId insTaskHandle;
 osThreadId gimbalTaskHandle;
 osThreadId modeTaskHandle;
+osThreadId uiTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -63,6 +65,7 @@ void StartDefaultTask(void const * argument);
 void StartInsTask(void const * argument);
 void StartGimbalTask(void const * argument);
 void StartModeTask(void const * argument);
+void StartUITask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -125,6 +128,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of modeTask */
   osThreadDef(modeTask, StartModeTask, osPriorityHigh, 0, 384);
   modeTaskHandle = osThreadCreate(osThread(modeTask), NULL);
+
+  /* definition and creation of uiTask */
+  osThreadDef(uiTask, StartUITask, osPriorityNormal, 0, 256);
+  uiTaskHandle = osThreadCreate(osThread(uiTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
@@ -213,6 +220,25 @@ void StartModeTask(void const * argument)
         osDelay(1);
     }
   /* USER CODE END StartModeTask */
+}
+
+/* USER CODE BEGIN Header_StartUITask */
+/**
+* @brief Function implementing the uiTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartUITask */
+void StartUITask(void const * argument)
+{
+  /* USER CODE BEGIN StartUITask */
+  /* Infinite loop */
+  for(;;)
+  {
+    UITask();
+    osDelay(1);
+  }
+  /* USER CODE END StartUITask */
 }
 
 /* Private application code --------------------------------------------------*/
