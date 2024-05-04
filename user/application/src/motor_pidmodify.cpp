@@ -24,11 +24,13 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* External variables --------------------------------------------------------*/
 float pitch_target;
 float yaw_target;
 GimbalTargetSylloge gimbaltarget;
+/* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
+extern int16_t GetRefMouseX();
+extern int16_t GetRefMouseY();
 
 /**
  * @brief       初始化模式：遥控模式——基本模式：PID参数集中调制
@@ -133,9 +135,9 @@ void RemoteAimingTargetSet()
     // if (remote.GetCh2() < 2.f && remote.GetCh2() > -2.f) {
     //     gimbaltarget.yaw_target = remote.GetCh2() * 0.f;
     // } else {
-    //     gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
+    //     gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 55.f;
     // }
-    // VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
+    // VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右55度
     // gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 
     /*位置增量式角度控制*/
@@ -157,7 +159,7 @@ void RemoteAimingTargetSet()
         yaw_target = 0.f;
     }
     gimbaltarget.yaw_target += yaw_target;
-    VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
+    VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右55度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
@@ -170,7 +172,7 @@ void RemoteAimingTargetSet()
 void KeymouseAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒 
+    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
@@ -186,8 +188,8 @@ void KeymouseAimingTargetSet()
     }
 
     // Pitch轴目标值设置
-    pitch_target = remote.GetMouseY();
-    if (remote.GetMouseY() < 3.f && remote.GetMouseY() > -3.f) {
+    pitch_target = GetRefMouseY();
+    if (pitch_target < 3.f && pitch_target > -3.f) {
         pitch_target = 0.f;
     }  // 死区设置，防止误漂移。
     /* 实测陀螺仪抬头为负，低头为正，第一人称，鼠标前移抬头，后移低头*/
@@ -196,12 +198,12 @@ void KeymouseAimingTargetSet()
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);   // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
-    yaw_target = remote.GetMouseX();
-    if (remote.GetMouseX() < 3.f && remote.GetMouseX() > -3.f) {
+    yaw_target = GetRefMouseX();
+    if (yaw_target < 3.f && yaw_target > -3.f) {
         yaw_target = 0.f;
     }
     gimbaltarget.yaw_target += yaw_target * 0.00075f;
-    VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
+    VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右55度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
@@ -234,8 +236,8 @@ void AutoAimingTargetSet()
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 负号使得遥控器抬头为正，低头为负
 
     // Yaw轴目标值设置
-    gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
-    VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右45度
+    gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 55.f;
+    VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右55度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 
@@ -273,9 +275,9 @@ void GimbalStop1TargetSet()
     if (remote.GetCh2() < 2.f && remote.GetCh2() > -2.f) {
         gimbaltarget.yaw_target = remote.GetCh2() * 0.f;
     } else {
-        gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 30.f;
+        gimbaltarget.yaw_target = remote.GetCh2() / 660.f * 55.f;
     }
-    VAL_LIMIT(gimbaltarget.yaw_target, -30.0f, 30.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右30度
+    VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 遥控器左手柄左右通道控制，最大值为向左向右55度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
 }
 

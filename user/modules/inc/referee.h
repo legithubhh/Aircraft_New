@@ -385,7 +385,7 @@ typedef struct
 class Referee
 {
    public:
-    UartInstance *p_instance_;
+    UartInstance *preferee_instance_;
     void Update(uint8_t *_p_data);
     void Init(UART_HandleTypeDef *_p_huart);
 
@@ -410,7 +410,7 @@ class Referee
 class RefKeyMouse
 {
    public:
-    UartInstance *p_instance_;
+    UartInstance *pkeymouse_instance_;
     void Update(uint8_t *_p_data);
     void Init(UART_HandleTypeDef *_p_huart);
     void KeyProcessUI();
@@ -424,6 +424,8 @@ class RefKeyMouse
 extern Referee referee;
 extern RefKeyMouse ref_keymouse;
 /* Exported function prototypes ----------------------------------------------*/
+int16_t GetRefMouseX();
+int16_t GetRefMouseY();
 
 #endif
 

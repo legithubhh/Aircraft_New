@@ -16,7 +16,6 @@
 #include "aircraft.h"
 
 #include "bsp_dwt.h"
-#include "client_UI.h"
 #include "cmsis_os.h"
 #include "gimbal.h"
 #include "motor_pidmodify.h"
