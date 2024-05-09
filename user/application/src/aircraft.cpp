@@ -23,6 +23,7 @@
 #include "remote.h"
 #include "remote_keyboard.h"
 #include "shoot.h"
+#include "vision.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -62,6 +63,9 @@ void GimbalInit()
  */
 void GimbalTask()
 {
+    /*与视觉通信*/
+    vision.Send();
+    vision.Ctrl();
     /*电机控制，集中发送CAN信号，发送给电机的信号必须为整形*/
     // CAN1总线0X1FF对应电机ID，ID号1为拨弹盘2006电机
     // CAN1总线0X200对应电机ID，ID号1-4分别为摩擦轮3508电机1，摩擦轮3508电机2，Yaw轴3508电机，Pitch轴2006电机
@@ -75,16 +79,16 @@ void GimbalTask()
     }
 
     // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
-        for (uint8_t i = 0; i < 16; i++) {
+    for (uint8_t i = 0; i < 16; i++) {
         if (ref_keymouse.referee_key_press[i] != last_key_press[i]) {
             if (ref_keymouse.referee_key_press[KEY_F] == 1) {
                 fric_flag = !fric_flag;
             }
             last_key_press[i] = ref_keymouse.referee_key_press[i];
         }
-            auto_flag = ref_keymouse.comma_data.right_button_down;
-            trig_flag = ref_keymouse.comma_data.left_button_down;   
-    }// 图传键鼠链路状态切换
+        auto_flag = ref_keymouse.comma_data.right_button_down;
+        trig_flag = ref_keymouse.comma_data.left_button_down;
+    }  // 图传键鼠链路状态切换
 
     // 遥控控制
     //  在允许发弹的模式，左拨盘在上：关闭拨弹盘，打开摩擦轮；左拨盘在中或下：打开拨弹盘，打开摩擦轮

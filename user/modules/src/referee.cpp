@@ -15,7 +15,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "referee.h"
 
-#include "board_comm.h"
 #include "crc.h"
 #include "string.h"
 /* Private macro -------------------------------------------------------------*/
@@ -31,6 +30,7 @@ RefKeyMouse ref_keymouse;
 void Referee::Update(uint8_t *_p_data)
 {
     uint16_t judge_length;  // 统计一帧数据长度
+    uint16_t data_length; //统计有效数据长度
     //	CmdID = 0; //数据命令码解析
     // 空数据包，则不作任何处理
     if (_p_data == NULL)
@@ -43,8 +43,9 @@ void Referee::Update(uint8_t *_p_data)
     if (_p_data[SOF] == JUDGE_FRAME_HEADER) {
         // 帧头CRC8校验
         if (Verify_CRC8_Check_Sum(_p_data, LEN_HEADER) == TRUE) {
+            data_length = _p_data[1] << 8 | _p_data[2];
             // 统计一帧数据长度(byte),用于CR16校验
-            judge_length = _p_data[DATA_LENGTH] + LEN_HEADER + LEN_CMDID + LEN_TAIL;
+            judge_length = data_length + LEN_HEADER + LEN_CMDID + LEN_TAIL;
             // 帧尾CRC16校验
             // if (Verify_CRC16_Check_Sum(_p_data, judge_length) == TRUE) {
             // 2个8位拼成16位int
@@ -136,6 +137,7 @@ void Referee::Init(UART_HandleTypeDef *_phuart)
 void RefKeyMouse::Update(uint8_t *_p_data)
 {
     uint16_t judge_length;  // 统计一帧数据长度
+    uint16_t data_length; //统计有效数据长度
     //	CmdID = 0; //数据命令码解析
     // 空数据包，则不作任何处理
     if (_p_data == NULL)
@@ -148,8 +150,9 @@ void RefKeyMouse::Update(uint8_t *_p_data)
     if (_p_data[SOF] == JUDGE_FRAME_HEADER) {
         // 帧头CRC8校验
         if (Verify_CRC8_Check_Sum(_p_data, LEN_HEADER) == TRUE) {
+            data_length = _p_data[1] << 8 | _p_data[2];
             // 统计一帧数据长度(byte),用于CR16校验
-            judge_length = _p_data[DATA_LENGTH] + LEN_HEADER + LEN_CMDID + LEN_TAIL;
+            judge_length = data_length + LEN_HEADER + LEN_CMDID + LEN_TAIL;
             // 帧尾CRC16校验
             // if (Verify_CRC16_Check_Sum(_p_data, judge_length) == TRUE) {
             // 2个8位拼成16位int
@@ -163,11 +166,11 @@ void RefKeyMouse::Update(uint8_t *_p_data)
             }
             // }
         }
-        // 首地址加帧长度,指向CRC16下一字节,用来判断是否为0xA5,从而判断一个数据包是否有多帧数据
-        if (*(_p_data + sizeof(xFrameHeader) + LEN_CMDID + FrameHeader.DataLength + LEN_TAIL) == 0xA5) {
-            // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包解析完毕
-            Update(_p_data + sizeof(xFrameHeader) + LEN_CMDID + FrameHeader.DataLength + LEN_TAIL);
-        }
+        // // 首地址加帧长度,指向CRC16下一字节,用来判断是否为0xA5,从而判断一个数据包是否有多帧数据
+        // if (*(_p_data + sizeof(xFrameHeader) + LEN_CMDID + FrameHeader.DataLength + LEN_TAIL) == 0xA5) {
+        //     // 如果一个数据包出现了多帧数据,则再次调用解析函数,直到所有数据包解析完毕
+        //     Update(_p_data + sizeof(xFrameHeader) + LEN_CMDID + FrameHeader.DataLength + LEN_TAIL);
+        // }
     }
     KeyProcessUI();
 }

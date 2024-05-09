@@ -54,8 +54,8 @@ void PidSetInitial()
     /**
      * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.yaw_angle.Init(50.f, 0.f, 1.95f, 50.f * 1.5f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(50.f, 0.f, 1.95f, 3750.f * 1.f, 0.f);
+    gimbal.yaw_angle.Init(50.f, 0.f, 1.95f, 50.f * 1.f, 0.f);  // 输出限幅控制最大速度
+    gimbal.yaw_speed.Init(50.f, 0.f, 1.95f, 2500.f * 1.f, 0.f);
 
     // gimbal.yaw_angle.Init(66.f, 0.f, 2.05f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
     // gimbal.yaw_speed.Init(66.f, 0.f, 2.05f, 6534.f * 1.f, 0.f);
