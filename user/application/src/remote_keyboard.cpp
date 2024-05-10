@@ -60,7 +60,7 @@ void ModeTask()
         referee.aerial_robot_support_data_.airforce_status = 2;  // 测试用
         referee.aerial_robot_support_data_.time_remain = 1;      // 测试用
         if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
-            // 按R键切换自瞄模式与手瞄模式
+            // 按鼠标右键键切换自瞄模式与手瞄模式
             if (auto_flag == 1) {
                 PidAdjust();
                 AutoAimingTargetSet();

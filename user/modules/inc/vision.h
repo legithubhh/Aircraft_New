@@ -73,14 +73,6 @@ class Vision
   {
 	return rece_.can_shoot;
   };
-  float GetTargetPitch()
-  {
-	return target_pitch_;
-  };
-  float GetTargetYaw()
-  {
-	return target_yaw_;
-  };
   send_packet send_;
   rece_packet rece_;
  private:
@@ -92,7 +84,8 @@ class Vision
 /* Exported variables --------------------------------------------------------*/
 extern Vision vision;
 /* Exported function prototypes ----------------------------------------------*/
-
+float GetTargetPitch();
+float GetTargetYaw();
 #endif
 
 #endif /* __VISION_H_ */

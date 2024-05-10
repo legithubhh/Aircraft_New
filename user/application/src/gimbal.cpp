@@ -71,7 +71,7 @@ void Gimbal::Control()
     pitch_angle.SetMeasure(INS.Roll);
     pitch_speed.SetRef(pitch_angle.Calculate());
     pitch_speed.SetMeasure(INS.Gyro[ROLL_AXIS]);
-    pitch_output_torque = -pitch_speed.Calculate();  // 加前馈
+    pitch_output_torque = -pitch_speed.Calculate();  // 可以考虑加前馈，目前不需要；
 }
 
 /**

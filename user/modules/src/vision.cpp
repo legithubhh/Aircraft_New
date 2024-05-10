@@ -36,17 +36,7 @@ extern uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 void Vision::AngTrans()
 {
     target_pitch_ = Math::RadToDeg((float)rece_.pitch);
-    if (rece_.yaw < 0) {
-        rece_.yaw = 2 * PI + rece_.yaw;
-    }
-    target_yaw_ = (float)INS.YawTotalAngle - INS.Yaw + Math::RadToDeg((float)rece_.yaw);
-    if (abs(INS.Yaw - Math::RadToDeg((float)rece_.yaw)) > 180) {
-        if (INS.Yaw > 180) {
-            target_yaw_ = INS.YawTotalAngle + (360 - abs(INS.Yaw - Math::RadToDeg((float)rece_.yaw)));
-        } else {
-            target_yaw_ = INS.YawTotalAngle - (360 - abs(INS.Yaw - Math::RadToDeg((float)rece_.yaw)));
-        }
-    }
+    target_yaw_ = Math::RadToDeg((float)rece_.yaw);
 }
 
 void Vision::Receive()
@@ -86,4 +76,14 @@ void Vision::Ctrl()
     if (rece_.tracking == 1) {
         AngTrans();
     }
+}
+
+float GetTargetPitch()
+{
+    return vision.target_pitch_;
+}
+
+float GetTargetYaw()
+{
+    return vision.target_yaw_;
 }
