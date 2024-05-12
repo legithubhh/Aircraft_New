@@ -55,8 +55,8 @@ void PidSetInitial()
     /**
      * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.yaw_angle.Init(50.f, 0.f, 1.95f, 50.f * 1.f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(50.f, 0.f, 1.95f, 2500.f * 1.f, 0.f);
+    gimbal.yaw_angle.Init(50.f, 0.f, 2.3f, 40.f * 1.f, 0.f);  // 输出限幅控制最大速度
+    gimbal.yaw_speed.Init(70.f, 0.f, 2.3f, 2800.f * 1.f, 0.f);
 
     // gimbal.yaw_angle.Init(66.f, 0.f, 2.05f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
     // gimbal.yaw_speed.Init(66.f, 0.f, 2.05f, 6534.f * 1.f, 0.f);
@@ -66,8 +66,12 @@ void PidSetInitial()
     /**
      * Pitch轴DM电机的PID参数初始化
      */
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 5.f * 1.f, 0.0f);      // 输出限幅控制最大速度  微分滤波10
-    gimbal.pitch_speed.Init(0.35f, 0.3f, 0.08f, 1.75f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 4.f * 1.f, 0.0f);      // 输出限幅控制最大速度  微分滤波10
+    gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.8f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+
+    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 5.f * 1.f, 0.0f);      // 输出限幅控制最大速度  微分滤波10
+    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.1f, 1.75f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0 震荡1
 
@@ -150,7 +154,7 @@ void RemoteAimingTargetSet()
         pitch_target = 0.f;
     }
     gimbaltarget.pitch_target += pitch_target;
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 24.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为24度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 30.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 陀螺仪向上为正，遥杆前推为正。负号使得遥控器前推为负，低头；符合操作习惯；
 
     // Yaw轴目标值设置
@@ -195,7 +199,7 @@ void KeymouseAimingTargetSet()
     }  // 死区设置，防止误漂移。
     /* 实测陀螺仪抬头为负，低头为正，第一人称，鼠标前移抬头，后移低头*/
     gimbaltarget.pitch_target += pitch_target * 0.00085f;  // 根据鼠标灵敏度结合操作手的操作习惯实际测试后调整数值。测试鼠标DPI为1600。
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 24.0f);    // 抬头最大值角度为10度，低头最大角度为24度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 30.0f);    // 抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);   // 陀螺仪向上为正，鼠标往下为正。前取负号，使得鼠标向上为正，抬头；符合操作习惯；
 
     // Yaw轴目标值设置
@@ -226,7 +230,7 @@ void AutoAimingTargetSet()
 
     // Pitch轴目标值设置
     gimbaltarget.pitch_target = GetTargetPitch();
-    VAL_LIMIT(gimbaltarget.pitch_target, 10.f, -24.0f);   // 抬头最大值角度为10度，低头最大角度为24度
+    VAL_LIMIT(gimbaltarget.pitch_target, 10.f, -30.0f);   // 抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(gimbaltarget.pitch_target);  // 陀螺仪向上为正，视觉低头给负值，抬头给正值，符合陀螺仪值；
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = GetTargetYaw();
@@ -256,12 +260,12 @@ void GimbalStop1TargetSet()
     if (remote.GetCh1() < 2.f && remote.GetCh1() > -2.f) {
         gimbaltarget.pitch_target = remote.GetCh1() * 0.f;
     } else if (remote.GetCh1() > 2.f) {
-        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 24.f;
+        gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 30.f;
     }  // 实测仰角为正，俯角为负————抬头遥杆向后输出负值，低头遥杆向前输出正值
     else {
         gimbaltarget.pitch_target = remote.GetCh1() / 660.f * 10.f;
     }
-    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 24.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为24度
+    VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 30.0f);   // 遥控器右手柄上下通道控制，抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 根据实际情况调整正负号
 
     // Yaw轴目标值设置

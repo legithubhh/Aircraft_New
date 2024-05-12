@@ -58,7 +58,7 @@ void Vision::Encode()
     }
     send_.reserved = 0;
     send_.mode = 1;
-    send_.pitch = -Math::DegToRad(INS.Roll);  // 实际安装后Roll为pitch，正负根据实际情况调整
+    send_.pitch = Math::DegToRad(INS.Roll);  // 实际安装后Roll为pitch，陀螺仪向左向上为正，视觉向左向上为正
     send_.yaw = Math::DegToRad(INS.Yaw);
     send_.bullet_speed = referee.shoot_data_.bullet_speed;
     send_.checksum = Get_CRC16_Check_Sum((uint8_t *)&send_, sizeof(send_packet) - 2, 0xffff);
