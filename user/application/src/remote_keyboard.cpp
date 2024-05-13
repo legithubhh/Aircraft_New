@@ -33,8 +33,8 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+Flag flag;
 /* External variables --------------------------------------------------------*/
-extern uint8_t auto_flag;  // 自瞄开关控制
 /* Private function prototypes -----------------------------------------------*/
 void PidFlagInit();
 void PidModeSwitch();
@@ -44,6 +44,18 @@ void HaltOutput();
 
 void ModeTask()
 {
+        // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
+    for (uint8_t i = 0; i < 16; i++) {
+        if (ref_keymouse.referee_key_press[i] != flag.last_key_press[i]) {
+            if (ref_keymouse.referee_key_press[KEY_F] == 1) {
+                flag.fric_flag = !flag.fric_flag;
+            }
+            flag.last_key_press[i] = ref_keymouse.referee_key_press[i];
+        }
+        flag.auto_flag = ref_keymouse.comma_data.right_button_down;
+        flag.trig_flag = ref_keymouse.comma_data.left_button_down;
+    }  // 图传键鼠链路状态切换
+
     /*遥控器控制模式选择*/
     // 右拨杆在上，遥控器控制模式
     if (remote.GetS2() == 1) {
@@ -61,7 +73,7 @@ void ModeTask()
         referee.aerial_robot_support_data_.time_remain = 1;      // 测试用
         if (referee.aerial_robot_support_data_.airforce_status == 2 && referee.aerial_robot_support_data_.time_remain > 0) {
             // 按鼠标右键键切换自瞄模式与手瞄模式
-            if (auto_flag == 1) {
+            if (flag.auto_flag == 1) {
                 PidAdjust();
                 AutoAimingTargetSet();
                 MotorStart();

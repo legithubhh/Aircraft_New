@@ -21,6 +21,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 /* Exported macro ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
@@ -72,7 +73,18 @@ typedef enum {
     pitch2_pid = 2,
 
 } PidSwitchMode;
+
+typedef struct
+{
+    uint8_t fric_flag;           // 摩擦轮开关控制
+    uint8_t trig_flag;           // 拨弹盘开关控制
+    uint8_t auto_flag;           // 自瞄开关控制
+    uint8_t last_auto_flag;      // 上一次自瞄开关状态
+    uint8_t last_key_press[16];  // 上一次按键状态
+} Flag;
+
 /* Exported variables --------------------------------------------------------*/
+extern Flag flag;
 /* Exported function prototypes ----------------------------------------------*/
 void ModeTask();
 

@@ -18,11 +18,11 @@
 #include "crc.h"
 #include "ins.h"
 #include "string.h"
+#include "remote_keyboard.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-
 unsigned char UI_Seq;  // 包的序号
 uint16_t Robot_ID;
 uint16_t Cilent_ID;
@@ -52,9 +52,6 @@ char da_fu[8] = "BIGBUFF";
 char xiao_fu[8] = "MINBUFF";
 
 /* External variables --------------------------------------------------------*/
-/* 摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）*/
-extern uint8_t fric_flag;   // 摩擦轮状态
-extern uint8_t auto_flag;   // 自瞄状态
 /* Private function prototypes -----------------------------------------------*/
 void ID_Judge(void);
 void UI_init(void);
@@ -69,7 +66,6 @@ void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32
 void Float_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, float FloatData);
 void Char_Draw(String_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Size, u32 Graph_Digit, u32 Graph_Width, u32 Start_x, u32 Start_y, char *Char_Data);
 void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_StartAngle, u32 Graph_EndAngle, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 x_Length, u32 y_Length);
-
 
 void UITask()
 {
@@ -127,13 +123,13 @@ void UITask()
         }
 
         if (UI_PushUp_Counter % 21 == 0) {
-            if (auto_flag == 0 && fric_flag == 1) {
+            if (flag.auto_flag == 0 && flag.fric_flag == 1) {
                 Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tOFF");
-            } else if (auto_flag == 1 && fric_flag == 1) {
+            } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
                 Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tON");
-            } else if (auto_flag == 1 && fric_flag == 0) {
+            } else if (flag.auto_flag == 1 && flag.fric_flag == 0) {
                 Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tON");
-            } else if (auto_flag == 0 && fric_flag == 0) {
+            } else if (flag.auto_flag == 0 && flag.fric_flag == 0) {
                 Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tOFF");
             }
             UI_PushUp_String(&UI_String1);

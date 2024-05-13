@@ -28,10 +28,6 @@
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint8_t fric_flag = 0;       // 摩擦轮开关控制
-uint8_t trig_flag = 0;       // 拨弹盘开关控制
-uint8_t auto_flag = 0;       // 自瞄开关控制
-uint8_t last_key_press[16];  // 上一次按键状态
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void CANC620IdSet();
@@ -78,18 +74,6 @@ void GimbalTask()
         } while (gimbal.pitch_motor.enanble_flag == 0);
     }
 
-    // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
-    for (uint8_t i = 0; i < 16; i++) {
-        if (ref_keymouse.referee_key_press[i] != last_key_press[i]) {
-            if (ref_keymouse.referee_key_press[KEY_F] == 1) {
-                fric_flag = !fric_flag;
-            }
-            last_key_press[i] = ref_keymouse.referee_key_press[i];
-        }
-        auto_flag = ref_keymouse.comma_data.right_button_down;
-        trig_flag = ref_keymouse.comma_data.left_button_down;
-    }  // 图传键鼠链路状态切换
-
     // 遥控控制
     //  在允许发弹的模式，左拨盘在上：关闭拨弹盘，打开摩擦轮；左拨盘在中或下：打开拨弹盘，打开摩擦轮
     if (remote.GetS1() == 1 && remote.GetS2() == 1) {
@@ -103,17 +87,17 @@ void GimbalTask()
     }
 
     // 键鼠控制
-    if (remote.GetS2() == 3 && fric_flag == 0 && trig_flag == 0) {
+    if (remote.GetS2() == 3 && flag.fric_flag == 0 && flag.trig_flag == 0) {
         DjiMotorSend(&hcan1, 0x200, 0, 0, (int16_t)gimbal.yaw_output_speed, 0);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
-    if (remote.GetS2() == 3 && fric_flag == 1 && trig_flag == 0) {
+    if (remote.GetS2() == 3 && flag.fric_flag == 1 && flag.trig_flag == 0) {
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, 0);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
-    if (remote.GetS2() == 3 && fric_flag == 1 && trig_flag == 1) {
+    if (remote.GetS2() == 3 && flag.fric_flag == 1 && flag.trig_flag == 1) {
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
