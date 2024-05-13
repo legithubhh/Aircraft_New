@@ -16,6 +16,7 @@
  * s1:1       s2:2      发弹急停模式：摩擦轮速度设为0，拨弹盘速度设为0，可旋转双轴
  * s1:3       s2:2      发弹急停模式：摩擦轮速度设为0，拨弹盘速度设为0，可旋转双轴
  * s1:2       s2:2      急停模式：摩擦轮，拨弹盘，双轴输出都发0
+ * 键鼠控制按键：F键开关摩擦轮，R键进行退弹，鼠标左键开关拨弹盘，鼠标右键开关自瞄模式
  *******************************************************************************
  *  Copyright (c) 2024 Reborn Team, USTB.
  *  All Rights Reserved.
@@ -24,6 +25,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "remote_keyboard.h"
 
+#include "cmsis_os.h"
 #include "gimbal.h"
 #include "motor_pidmodify.h"
 #include "referee.h"
@@ -44,11 +46,14 @@ void HaltOutput();
 
 void ModeTask()
 {
-        // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
+    // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
     for (uint8_t i = 0; i < 16; i++) {
         if (ref_keymouse.referee_key_press[i] != flag.last_key_press[i]) {
             if (ref_keymouse.referee_key_press[KEY_F] == 1) {
                 flag.fric_flag = !flag.fric_flag;
+            }
+            if (ref_keymouse.referee_key_press[KEY_R] == 1) {
+                flag.return_trig_count++;
             }
             flag.last_key_press[i] = ref_keymouse.referee_key_press[i];
         }
@@ -103,6 +108,16 @@ void ModeTask()
             MotorStart();
             HaltOutput();
         }
+    }
+
+    // 退弹模式，拨弹盘反转0.1s，但急停模式优先
+    if (flag.return_trig_count != flag.last_return_trig_count) {
+        TriggerReturnTargetSet();
+        MotorStart();
+        flag.last_return_trig_count = flag.return_trig_count;
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
+        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
+        osDelay(100);
     }
 }
 

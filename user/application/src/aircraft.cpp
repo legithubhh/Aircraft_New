@@ -74,30 +74,8 @@ void GimbalTask()
         } while (gimbal.pitch_motor.enanble_flag == 0);
     }
 
-    // 遥控控制
-    //  在允许发弹的模式，左拨盘在上：关闭拨弹盘，打开摩擦轮；左拨盘在中或下：打开拨弹盘，打开摩擦轮
-    if (remote.GetS1() == 1 && remote.GetS2() == 1) {
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, 0);
-        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
-    }
-
-    if (remote.GetS1() != 1 && remote.GetS2() == 1) {
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
-        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
-    }
-
-    // 键鼠控制
-    if (remote.GetS2() == 3 && flag.fric_flag == 0 && flag.trig_flag == 0) {
-        DjiMotorSend(&hcan1, 0x200, 0, 0, (int16_t)gimbal.yaw_output_speed, 0);
-        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
-    }
-
-    if (remote.GetS2() == 3 && flag.fric_flag == 1 && flag.trig_flag == 0) {
-        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, 0);
-        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
-    }
-
-    if (remote.GetS2() == 3 && flag.fric_flag == 1 && flag.trig_flag == 1) {
+    // 遥控控制与键鼠控制
+    if (remote.GetS2() == 1 || remote.GetS2() == 3) {
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }

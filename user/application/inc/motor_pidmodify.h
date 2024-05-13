@@ -42,6 +42,7 @@ void KeymouseAimingTargetSet();
 void AutoAimingTargetSet();
 void GimbalStop1TargetSet();
 void GimbalStop2TargetSet();
+void TriggerReturnTargetSet();
 void MotorStart();
 #endif
 

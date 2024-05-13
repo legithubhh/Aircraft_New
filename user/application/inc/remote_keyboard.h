@@ -80,6 +80,8 @@ typedef struct
     uint8_t trig_flag;           // 拨弹盘开关控制
     uint8_t auto_flag;           // 自瞄开关控制
     uint8_t last_auto_flag;      // 上一次自瞄开关状态
+    uint8_t return_trig_count;      // 拨弹盘退弹总次数统计
+    uint8_t last_return_trig_count; // 上一次退弹总次数统计
     uint8_t last_key_press[16];  // 上一次按键状态
 } Flag;
 

@@ -17,8 +17,8 @@
 
 #include "crc.h"
 #include "ins.h"
-#include "string.h"
 #include "remote_keyboard.h"
+#include "string.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -78,7 +78,7 @@ void UITask()
     vTaskDelay(300);
 
     for (;;) {
-        vTaskDelay(10);  // 延时放在上面，是为了发送一次数据，立马延时，防止堵塞
+        vTaskDelay(10);  // 延时放在上面，是为了发送一次数据，立马延时，防止堵塞，在此进入两个for循环，也必须延时来退出进程
 
         UI_PushUp_Counter++;
 
@@ -90,7 +90,7 @@ void UITask()
         if (UI_PushUp_Counter % 311 == 0) {
             // 下横线
             for (int i = 0; i < 7; i++) {
-                Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 3, UI_Color_Green, 1, 760 + 10 * i, 540 - 27 * i, 1160 - 10 * i, 540 - 27 * i);
+                Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 3, UI_Color_Yellow, 1, 760 + 10 * i, 540 - 27 * i, 1160 - 10 * i, 540 - 27 * i);
             }
             UI_PushUp_Graphs(1, &UI_Graph7);
 
@@ -104,35 +104,50 @@ void UITask()
             // 自瞄圆
             Circle_Draw(&UI_Graph2.imageData[0], (char *)"002", UI_Graph_Add, 7, UI_Color_Orange, 1, 960, 540, 60);
             // P轴
-            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 4, 300, 660, INS.Roll);  // 根据安装位置，数据Roll对应实际Pitch轴
+            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 2, 300, 660, INS.Roll);  // 根据安装位置，数据Roll对应实际Pitch轴
             UI_PushUp_Graphs(1, &UI_Graph2);
+            // Y轴
+            Float_Draw(&UI_Graph1.imageData[0], (char *)"203", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 2, 300, 680, INS.Yaw);
+            UI_PushUp_Graphs(1, &UI_Graph1);
+            // 退弹计数
+            Float_Draw(&UI_Graph1.imageData[0], (char *)"207", UI_Graph_Add, 2, UI_Color_Cyan, 18, 22 - 1, 3, 345, 672, flag.return_trig_count);
+            UI_PushUp_Graphs(1, &UI_Graph1);
             continue;
         }
 
         if (UI_PushUp_Counter % 331 == 0) {
-            // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）
-            Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Add, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tOFF");
+            // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）、退弹次数计数
+            Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Add, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tOFF");
             UI_PushUp_String(&UI_String1);
+            Char_Draw(&UI_String1.String, (char *)"206", UI_Graph_Add, 2, UI_Color_Cyan, 18, 22 - 1, 3, 285, 672, (char *)"Return:\t");
+            UI_PushUp_String(&UI_String1);
+            Char_Draw(&UI_String2.String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 4, 240, 660, (char *)"Pitch:\t");
+            UI_PushUp_String(&UI_String2);
+            Char_Draw(&UI_String2.String, (char *)"204", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 4, 240, 680, (char *)"Yaw:\t");
+            UI_PushUp_String(&UI_String2);
             continue;
         }
 
         if (UI_PushUp_Counter % 29 == 0) {
-            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Change, 2, UI_Color_Pink, 24, 3, 4, 300, 660, INS.Roll);
+            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Change, 2, UI_Color_Pink, 24, 3, 2, 300, 660, INS.Roll);
             UI_PushUp_Graphs(1, &UI_Graph2);
+            Float_Draw(&UI_Graph1.imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 24, 3, 2, 300, 680, INS.Yaw);
+            UI_PushUp_Graphs(1, &UI_Graph1);
             continue;
         }
 
         if (UI_PushUp_Counter % 21 == 0) {
             if (flag.auto_flag == 0 && flag.fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tOFF");
+                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAuto:\tOFF");
             } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAutoShoot:\tON");
+                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAuto:\tON");
             } else if (flag.auto_flag == 1 && flag.fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tON");
+                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tON");
             } else if (flag.auto_flag == 0 && flag.fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"203", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAutoShoot:\tOFF");
+                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tOFF");
             }
             UI_PushUp_String(&UI_String1);
+
             continue;
         }
     }

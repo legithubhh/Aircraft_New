@@ -67,11 +67,11 @@ void PidSetInitial()
     /**
      * Pitch轴DM电机的PID参数初始化
      */
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 4.f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
-    gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.8f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 3.2f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
+    gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.44f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
 
-    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 5.f * 1.f, 0.0f);      // 输出限幅控制最大速度  微分滤波10
-    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.1f, 1.75f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 4.f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
+    // gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.8f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0 震荡1
@@ -116,11 +116,14 @@ void RemoteAimingTargetSet()
 
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
-    if (remote.GetS1() == 3) {
+    if (remote.GetS1() == 1) {
+        gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (remote.GetS1() == 3) {
         gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (remote.GetS1() == 2) {
-        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     }
     /*位置式角度控制*/
@@ -178,18 +181,32 @@ void RemoteAimingTargetSet()
 void KeymouseAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
-    shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    if (flag.fric_flag == 1) {
+        gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    } else if (flag.fric_flag == 0) {
+        gimbaltarget.friction_wheel_target = 0.f;
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    } else {
+        gimbaltarget.friction_wheel_target = 0.f;
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    }
 
     // 拨弹盘目标值设置
-    if (remote.GetS1() == 1) {
-        gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+    if (flag.trig_flag == 0) {
+        gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
-    } else if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 1) {
+        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
-    } else if (remote.GetS1() == 2) {
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 3) {
         gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 2) {
+        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else {
+        gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     }
 
@@ -311,4 +328,17 @@ void GimbalStop2TargetSet()
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = 0;
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
+}
+
+/**
+ * @brief      退弹模式，拨弹盘反转
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void TriggerReturnTargetSet()
+{
+    // 拨弹盘目标值设置
+    gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;
+    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
 }
