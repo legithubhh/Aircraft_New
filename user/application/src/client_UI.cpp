@@ -30,14 +30,13 @@ uint16_t Cilent_ID;
 String_Data CH_Cap, CH_Shoot, CH_AIM, CH_user, CH_XTL_State;
 Graph_Data G_aim[16], G1, G2;
 Float_Data F1;
-char G_aim_mark[16][4] = {"011", "012", "013", "014", "015", "016", "017", "018", "019", "020", "021", "022", "023", "024", "025", "026"};
+char G_aim_mark[8][4] = {"601", "602", "603", "604", "605", "606", "607", "608"};
 
-UI_Graph1_t UI_Graph1;
-UI_Graph2_t UI_Graph2;
+UI_Graph1_t UI_Graph1[2];
+UI_Graph2_t UI_Graph2[2];
 UI_Graph5_t UI_Graph5;
 UI_Graph7_t UI_Graph7;
-UI_String_t UI_String1;
-UI_String_t UI_String2;
+UI_String_t UI_String[4];
 UI_Delete_t UI_Delete;
 
 char XTL[2] = "G";
@@ -72,84 +71,95 @@ void UITask()
     // 这里UI_PushUp_Counter判断都是很诡异的数字
     // 就是为了任务完整执行一次，只会发送一组UI数据
     static uint16_t UI_PushUp_Counter = 261;
-    float Capacitance_X = 0;
+    static float Capacitance_X = 0;
+    UI_PushUp_Counter++;
 
-    // 裁判系统初始化
-    vTaskDelay(300);
-
-    for (;;) {
-        vTaskDelay(10);  // 延时放在上面，是为了发送一次数据，立马延时，防止堵塞，在此进入两个for循环，也必须延时来退出进程
-
+    // ID判断
+    if (UI_PushUp_Counter % 1000 == 0) {
+        ID_Judge();
+        vTaskDelay(1);  // 发送一次数据，立马延时，防止堵塞。
         UI_PushUp_Counter++;
+    }
 
-        // ID判断
-        if (UI_PushUp_Counter % 1000 == 0) {
-            ID_Judge();
+    if (UI_PushUp_Counter % 311 == 0) {
+        // 下横线
+        for (int i = 0; i < 7; i++) {
+            Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 6, UI_Color_Yellow, 1, 860 + 10 * i, 540 - 27 * i, 1060 - 10 * i, 540 - 27 * i);
         }
+        UI_PushUp_Graphs(7, &UI_Graph7);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
 
-        if (UI_PushUp_Counter % 311 == 0) {
-            // 下横线
-            for (int i = 0; i < 7; i++) {
-                Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 3, UI_Color_Yellow, 1, 760 + 10 * i, 540 - 27 * i, 1160 - 10 * i, 540 - 27 * i);
-            }
-            UI_PushUp_Graphs(1, &UI_Graph7);
+    if (UI_PushUp_Counter % 331 == 0) {
+        // 竖线
+        Line_Draw(&UI_Graph1[0].imageData[0], G_aim_mark[7], UI_Graph_Add, 6, UI_Color_Green, 1, 960, 300, 960, 780);
+        UI_PushUp_Graphs(1, &UI_Graph1[0]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
 
-            // 竖线
-            Line_Draw(&UI_Graph1.imageData[0], G_aim_mark[7], UI_Graph_Add, 4, UI_Color_Green, 1, 960, 0, 960, 1080);
-            UI_PushUp_Graphs(1, &UI_Graph1);
-            continue;
+    if (UI_PushUp_Counter % 351 == 0) {
+        // 自瞄圆
+        Circle_Draw(&UI_Graph1[1].imageData[0], (char *)"701", UI_Graph_Add, 7, UI_Color_Orange, 1, 960, 540, 60);
+        UI_PushUp_Graphs(1, &UI_Graph1[1]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 371 == 0) {
+        // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止），退弹次数计数
+        Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Add, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
+        UI_PushUp_String(&UI_String[0]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 391 == 0) {
+        // P轴Y轴角度；
+        Char_Draw(&UI_String[1].String, (char *)"201", UI_Graph_Add, 2, UI_Color_Pink, 12, 12, 2, 1460, 732, (char *)"Pitch:\nYaw:");
+        UI_PushUp_String(&UI_String[1]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 421 == 0) {
+        // 卡弹状态，退弹次数计数；
+        Char_Draw(&UI_String[2].String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 12, 16, 2, 285, 800, (char *)"Block:\nReturn:");
+        UI_PushUp_String(&UI_String[2]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 31 == 0) {
+        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 345, 800, flag.trig_block_flag);
+        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 345, 800, flag.return_trig_count);
+        UI_PushUp_Graphs(2, &UI_Graph2[0]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 29 == 0) {
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 1510, 732, INS.Roll);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 1510, 712, INS.Yaw);
+        UI_PushUp_Graphs(2, &UI_Graph2[1]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 21 == 0) {
+        if (flag.auto_flag == 0 && flag.fric_flag == 1) {
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tOFF");
+        } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tON ");
+        } else if (flag.auto_flag == 1 && flag.fric_flag == 0) {
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tON ");
+        } else if (flag.auto_flag == 0 && flag.fric_flag == 0) {
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
         }
-
-        if (UI_PushUp_Counter % 321 == 0) {
-            // 自瞄圆
-            Circle_Draw(&UI_Graph2.imageData[0], (char *)"002", UI_Graph_Add, 7, UI_Color_Orange, 1, 960, 540, 60);
-            // P轴
-            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 2, 300, 660, INS.Roll);  // 根据安装位置，数据Roll对应实际Pitch轴
-            UI_PushUp_Graphs(1, &UI_Graph2);
-            // Y轴
-            Float_Draw(&UI_Graph1.imageData[0], (char *)"203", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 2, 300, 680, INS.Yaw);
-            UI_PushUp_Graphs(1, &UI_Graph1);
-            // 退弹计数
-            Float_Draw(&UI_Graph1.imageData[0], (char *)"207", UI_Graph_Add, 2, UI_Color_Cyan, 18, 22 - 1, 3, 345, 672, flag.return_trig_count);
-            UI_PushUp_Graphs(1, &UI_Graph1);
-            continue;
-        }
-
-        if (UI_PushUp_Counter % 331 == 0) {
-            // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）、退弹次数计数
-            Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Add, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tOFF");
-            UI_PushUp_String(&UI_String1);
-            Char_Draw(&UI_String1.String, (char *)"206", UI_Graph_Add, 2, UI_Color_Cyan, 18, 22 - 1, 3, 285, 672, (char *)"Return:\t");
-            UI_PushUp_String(&UI_String1);
-            Char_Draw(&UI_String2.String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 4, 240, 660, (char *)"Pitch:\t");
-            UI_PushUp_String(&UI_String2);
-            Char_Draw(&UI_String2.String, (char *)"204", UI_Graph_Add, 2, UI_Color_Pink, 24, 3, 4, 240, 680, (char *)"Yaw:\t");
-            UI_PushUp_String(&UI_String2);
-            continue;
-        }
-
-        if (UI_PushUp_Counter % 29 == 0) {
-            Float_Draw(&UI_Graph2.imageData[1], (char *)"201", UI_Graph_Change, 2, UI_Color_Pink, 24, 3, 2, 300, 660, INS.Roll);
-            UI_PushUp_Graphs(1, &UI_Graph2);
-            Float_Draw(&UI_Graph1.imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 24, 3, 2, 300, 680, INS.Yaw);
-            UI_PushUp_Graphs(1, &UI_Graph1);
-            continue;
-        }
-
-        if (UI_PushUp_Counter % 21 == 0) {
-            if (flag.auto_flag == 0 && flag.fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAuto:\tOFF");
-            } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
-                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tON\n\nAuto:\tON");
-            } else if (flag.auto_flag == 1 && flag.fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tON");
-            } else if (flag.auto_flag == 0 && flag.fric_flag == 0) {
-                Char_Draw(&UI_String1.String, (char *)"205", UI_Graph_Change, 2, UI_Color_Green, 18, 22 - 1, 3, 285, 632, (char *)"Fric:\tOFF\n\nAuto:\tOFF");
-            }
-            UI_PushUp_String(&UI_String1);
-
-            continue;
-        }
+        UI_PushUp_String(&UI_String[0]);
+        vTaskDelay(1);
+        UI_PushUp_Counter++;
     }
 }
 
@@ -181,8 +191,9 @@ void UI_init(void)
     memset(&UI_Graph2, 0, sizeof(UI_Graph2));
     memset(&UI_Graph5, 0, sizeof(UI_Graph5));
     memset(&UI_Graph7, 0, sizeof(UI_Graph7));
-    memset(&UI_String1, 0, sizeof(UI_String1));
-    memset(&UI_String2, 0, sizeof(UI_String2));
+    for (uint8_t i = 0; i < 5; i++) {
+        memset(&UI_String[i], 0, sizeof(UI_String[0]));
+    }
     memset(&UI_Delete, 0, sizeof(UI_Delete));
     memset(&CH_XTL_State, 0, sizeof(CH_XTL_State));
     memset(&CH_Shoot, 0, sizeof(CH_Shoot));
@@ -212,8 +223,8 @@ void UI_init(void)
 void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y)
 {
     int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->graphic_name[i] = imagename[i];
     image->operate_tpye = Graph_Operate;
     image->layer = Graph_Layer;
     image->color = Graph_Color;
@@ -239,8 +250,8 @@ void Line_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Grap
 void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 End_x, u32 End_y)
 {
     int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->graphic_name[i] = imagename[i];
     image->graphic_tpye = UI_Graph_Rectangle;
     image->operate_tpye = Graph_Operate;
     image->layer = Graph_Layer;
@@ -267,8 +278,8 @@ void Rectangle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32
 void Circle_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph_Layer, u32 Graph_Color, u32 Graph_Width, u32 Start_x, u32 Start_y, u32 Graph_Radius)
 {
     int i;
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->graphic_name[i] = imagename[i];
     image->graphic_tpye = UI_Graph_Circle;
     image->operate_tpye = Graph_Operate;
     image->layer = Graph_Layer;
@@ -296,8 +307,8 @@ void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph
 {
     int i;
 
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->graphic_name[i] = imagename[i];
     image->graphic_tpye = UI_Graph_Arc;
     image->operate_tpye = Graph_Operate;
     image->layer = Graph_Layer;
@@ -329,8 +340,8 @@ void Float_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Gra
 {
     int i;
 
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->graphic_name[i] = imagename[i];
     image->graphic_tpye = UI_Graph_Float;
     image->operate_tpye = Graph_Operate;
     image->layer = Graph_Layer;
@@ -353,9 +364,9 @@ void Float_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Gra
  * @param Graph_Operate    图形操作（增加、改变、删除）
  * @param Graph_Layer      图层（0-9）
  * @param Graph_Color      图形颜色
- * @param Graph_Width      图形线宽
  * @param Graph_Size       字号
  * @param Graph_Digit      字符位数
+ * @param Graph_Width      图形线宽
  * @param Start_x,Start_y  数据开始坐标
  * @param *Char_Data      需要显示的字符串的指针
  * @return {*}
@@ -364,8 +375,8 @@ void Char_Draw(String_Data *image, char imagename[3], u32 Graph_Operate, u32 Gra
 {
     int i;
 
-    for (i = 0; i < 3 && imagename[i] != 0; i++)
-        image->Graph_Control.graphic_name[2 - i] = imagename[i];
+    for (i = 0; i < 3; i++)
+        image->Graph_Control.graphic_name[i] = imagename[i];
     image->Graph_Control.graphic_tpye = UI_Graph_Char;
     image->Graph_Control.operate_tpye = Graph_Operate;
     image->Graph_Control.layer = Graph_Layer;

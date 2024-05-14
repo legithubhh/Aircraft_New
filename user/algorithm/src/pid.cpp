@@ -199,5 +199,18 @@ void Pid::ErrorHandle()
 
     if (error_handle.ERRORCount > 500) {
         error_handle.ERRORType = PID_MOTOR_BLOCKED_ERROR;
-    }
+    } 
+}
+
+/**
+ * @brief Gets the error in the PID controller.
+ */
+ErrorType Pid::GetErrorHandle()
+{
+    return error_handle.ERRORType;
+}
+
+void Pid::ResetErrorHandle()
+{
+    error_handle.ERRORCount = PID_ERROR_NONE;
 }

@@ -64,10 +64,16 @@ void ModeTask()
     /*遥控器控制模式选择*/
     // 右拨杆在上，遥控器控制模式
     if (remote.GetS2() == 1) {
-        /*左拨杆在上——只转摩擦轮模式，中——拨弹盘低速模式，下——高速模式或（遥控器切换到自瞄模式，需要使用时取消注释）*/
-        PidAdjust();
-        RemoteAimingTargetSet();
-        MotorStart();
+        /*左拨杆在上——只转摩擦轮模式，中——拨弹盘转，下——退弹*/
+            PidAdjust();
+            RemoteAimingTargetSet();
+            MotorStart();
+    }
+    if(remote.GetS1() != flag.last_s1){
+        if(remote.GetS1() == 2){
+            flag.return_trig_count++;
+        }
+        flag.last_s1 = remote.GetS1();
     }
 
     // 右拨杆在中，键鼠模式
@@ -109,7 +115,16 @@ void ModeTask()
             HaltOutput();
         }
     }
-
+    //堵转检测
+    shoot.trigger_speed_.ErrorHandle();
+    if(shoot.trigger_speed_.GetErrorHandle() == 1)
+    {
+        flag.trig_block_flag = 1;
+    }
+    else
+    {
+        flag.trig_block_flag = 0;
+    }
     // 退弹模式，拨弹盘反转0.1s，但急停模式优先
     if (flag.return_trig_count != flag.last_return_trig_count) {
         TriggerReturnTargetSet();
@@ -117,6 +132,7 @@ void ModeTask()
         flag.last_return_trig_count = flag.return_trig_count;
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
+        shoot.trigger_speed_.ResetErrorHandle();
         osDelay(50);
     }
 }

@@ -99,6 +99,8 @@ class Pid
     void OutputFilter();
     void OutputLimit();
     void ErrorHandle();
+    ErrorType GetErrorHandle();
+    void ResetErrorHandle();
 
    private:
     float kp_;

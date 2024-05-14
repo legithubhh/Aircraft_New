@@ -82,7 +82,9 @@ typedef struct
     uint8_t last_auto_flag;      // 上一次自瞄开关状态
     uint8_t return_trig_count;      // 拨弹盘退弹总次数统计
     uint8_t last_return_trig_count; // 上一次退弹总次数统计
+    uint8_t trig_block_flag;             // 卡弹检测
     uint8_t last_key_press[16];  // 上一次按键状态
+    uint8_t last_s1;             // 上一次左拨杆状态
 } Flag;
 
 /* Exported variables --------------------------------------------------------*/

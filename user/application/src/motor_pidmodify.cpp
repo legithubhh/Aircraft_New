@@ -67,14 +67,14 @@ void PidSetInitial()
     /**
      * Pitch轴DM电机的PID参数初始化 超调——超出目标值距离；震荡频率——在目标值附近来回震荡频率；震荡时间——震荡的持续时间；
      */
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      // 微分滤波10（向下移动比向上移动更容易震荡）
-    gimbal.pitch_speed.Init(0.45f, 0.35f, 0.25f, 1.8f * 1.f, 0.0f);  // 微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
+    gimbal.pitch_angle.Init(2.f, 0.1f, 0.2f, 3.f * 1.f, 0.0f);      // 微分滤波10（向下移动比向上移动更容易震荡）
+    gimbal.pitch_speed.Init(0.4f, 0.1f, 0.4f, 1.2f * 1.f, 0.0f);  // 微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
 
     // gimbal.pitch_angle.Init(2.f, 0.35f, 0.04f, 3.5f * 1.f, 0.0f);     //微分滤波10
     // gimbal.pitch_speed.Init(0.4f, 0.2f, 0.3f, 1.4f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力3 超调0.5 震荡频率0.3 震荡时间0.5
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      //微分滤波10（向下移动比向上移动更容易震荡）
-    // gimbal.pitch_speed.Init(0.45f, 0.35f, 0.25f, 1.8f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
+    // gimbal.pitch_speed.Init(0.45f, 0.35f, 0.2f, 1.8f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0.5 震荡0.5
@@ -119,14 +119,11 @@ void RemoteAimingTargetSet()
 
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
-    if (remote.GetS1() == 1) {
+    if (remote.GetS1() == 3) {
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;// =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
-        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
-    } else if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
-        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
-    } else if (remote.GetS1() == 2) {
-        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     }
     /*位置式角度控制*/
