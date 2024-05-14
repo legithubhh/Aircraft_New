@@ -65,19 +65,22 @@ void PidSetInitial()
     // Kp越大，俯仰角抖动越厉害，Kd大了可能导致在稳定后出现自震荡，小了则可能抑制不了比例环节导致震荡。向左转抖动比向右转厉害
 
     /**
-     * Pitch轴DM电机的PID参数初始化
+     * Pitch轴DM电机的PID参数初始化 超调——超出目标值距离；震荡频率——在目标值附近来回震荡频率；震荡时间——震荡的持续时间；
      */
-    gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 3.2f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
-    gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.44f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+    gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      // 微分滤波10（向下移动比向上移动更容易震荡）
+    gimbal.pitch_speed.Init(0.45f, 0.35f, 0.25f, 1.8f * 1.f, 0.0f);  // 微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
 
-    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.03f, 4.f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
-    // gimbal.pitch_speed.Init(0.45f, 0.3f, 0.15f, 1.8f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定2，定在原位的能力2 超调0 震荡0.5
+    // gimbal.pitch_angle.Init(2.f, 0.35f, 0.04f, 3.5f * 1.f, 0.0f);     //微分滤波10
+    // gimbal.pitch_speed.Init(0.4f, 0.2f, 0.3f, 1.4f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力3 超调0.5 震荡频率0.3 震荡时间0.5
+
+    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      //微分滤波10（向下移动比向上移动更容易震荡）
+    // gimbal.pitch_speed.Init(0.45f, 0.35f, 0.25f, 1.8f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
-    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0 震荡1
+    // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0.5 震荡0.5
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.15f, 2.f * 1.f, 0.0f);       // 输出限幅控制最大速度  微分滤波1
-    // gimbal.pitch_speed.Init(0.3f, 0.75f, 0.3f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 稳定1，定在原位的能力1 超调1 震荡0
+    // gimbal.pitch_speed.Init(0.3f, 0.75f, 0.3f, 0.6f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 稳定1，定在原位的能力1 超调1 震荡0.1
 
     // gimbal.pitch_angle.Init(2.5f, 3.f, 1.5f, 2.5f * 1.f, 0.0f);     // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.25f, 0.75f, 0.25f, 1.f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波10 小幅KP震荡，源于微分
@@ -246,12 +249,34 @@ void KeymouseAimingTargetSet()
 void AutoAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
-    shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    if (flag.fric_flag == 1) {
+        gimbaltarget.friction_wheel_target = 115.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    } else if (flag.fric_flag == 0) {
+        gimbaltarget.friction_wheel_target = 0.f;
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    } else {
+        gimbaltarget.friction_wheel_target = 0.f;
+        shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+    }
 
     // 拨弹盘目标值设置
-    gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;
-    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    if (flag.trig_flag == 0) {
+        gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 1) {
+        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 3) {
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else if (flag.trig_flag == 1 && remote.GetS1() == 2) {
+        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    } else {
+        gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
+        shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+    }
 
     // Pitch轴目标值设置
     gimbaltarget.pitch_target = GetTargetPitch();

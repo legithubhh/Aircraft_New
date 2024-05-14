@@ -117,7 +117,7 @@ void ModeTask()
         flag.last_return_trig_count = flag.return_trig_count;
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
-        osDelay(100);
+        osDelay(50);
     }
 }
 
