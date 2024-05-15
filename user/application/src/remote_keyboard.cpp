@@ -42,7 +42,6 @@ void PidFlagInit();
 void PidModeSwitch();
 void PidAdjust();
 void PidAdjustByError();
-void HaltOutput();
 
 void ModeTask()
 {
@@ -69,12 +68,12 @@ void ModeTask()
             RemoteAimingTargetSet();
             MotorStart();
     }
-    if(remote.GetS1() != flag.last_s1){
+    if(remote.GetS1() != flag.last_s1 && remote.GetS2()==1){
         if(remote.GetS1() == 2){
             flag.return_trig_count++;
         }
-        flag.last_s1 = remote.GetS1();
     }
+    flag.last_s1 = remote.GetS1();
 
     // 右拨杆在中，键鼠模式
     if (remote.GetS2() == 3) {
@@ -97,7 +96,6 @@ void ModeTask()
             PidAdjust();
             GimbalStop2TargetSet();
             MotorStart();
-            HaltOutput();
         }
     }
 
@@ -112,7 +110,6 @@ void ModeTask()
             PidAdjust();
             GimbalStop2TargetSet();
             MotorStart();
-            HaltOutput();
         }
     }
     //堵转检测
@@ -127,13 +124,16 @@ void ModeTask()
     }
     // 退弹模式，拨弹盘反转0.1s，但急停模式优先
     if (flag.return_trig_count != flag.last_return_trig_count) {
+        TriggerZeroTargetSet();
+        MotorStart();
+        DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
+        osDelay(20);
         TriggerReturnTargetSet();
         MotorStart();
-        flag.last_return_trig_count = flag.return_trig_count;
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
-        gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
         shoot.trigger_speed_.ResetErrorHandle();
         osDelay(50);
+        flag.last_return_trig_count = flag.return_trig_count;
     }
 }
 
@@ -166,20 +166,4 @@ void PidAdjustByError()
  */
 void PidModeSwitch()
 {
-}
-
-/**
- * @brief      将输出计算结果置零，停止输出
- *   @arg       None
- * @retval      None
- * @note        None
- */
-void HaltOutput()
-{
-    gimbal.pitch_output_pos = 0;
-    gimbal.pitch_output_speed = 0;
-    gimbal.yaw_output_speed = 0;
-    shoot.fric_output_[0] = 0;
-    shoot.fric_output_[1] = 0;
-    shoot.trig_output_ = 0;
 }

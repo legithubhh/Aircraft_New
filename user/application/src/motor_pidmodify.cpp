@@ -30,10 +30,12 @@ float yaw_target;
 GimbalTargetSylloge gimbaltarget;
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
+void HaltOutput();
 extern int16_t GetRefMouseX();
 extern int16_t GetRefMouseY();
 extern float GetTargetPitch();
 extern float GetTargetYaw();
+
 /**
  * @brief       初始化模式：遥控模式——基本模式：PID参数集中调制
  *   @arg       None
@@ -56,8 +58,8 @@ void PidSetInitial()
     /**
      * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.yaw_angle.Init(50.f, 0.f, 2.3f, 40.f * 1.f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(70.f, 0.f, 2.3f, 2800.f * 1.f, 0.f);
+    gimbal.yaw_angle.Init(20.f, 10.f, 2.f, 40.f * 1.f, 0.f);  // 输出限幅控制最大速度
+    gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 3000.f * 1.f, 0.f);
 
     // gimbal.yaw_angle.Init(66.f, 0.f, 2.05f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
     // gimbal.yaw_speed.Init(66.f, 0.f, 2.05f, 6534.f * 1.f, 0.f);
@@ -66,15 +68,16 @@ void PidSetInitial()
 
     /**
      * Pitch轴DM电机的PID参数初始化 超调——超出目标值距离；震荡频率——在目标值附近来回震荡频率；震荡时间——震荡的持续时间；
+     * 向下静态力矩0.05-0.4N*m，向上0.2-0.4N*m
      */
-    gimbal.pitch_angle.Init(2.f, 0.1f, 0.2f, 3.f * 1.f, 0.0f);      // 微分滤波10（向下移动比向上移动更容易震荡）
-    gimbal.pitch_speed.Init(0.4f, 0.1f, 0.4f, 1.2f * 1.f, 0.0f);  // 微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
+    gimbal.pitch_angle.Init(1.f, 2.f, 0.05f, 2.5f * 1.f, 0.0f);  // 微分滤波10（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    gimbal.pitch_speed.Init(1.2f, 0.1f, 0.01f, 1.5f * 1.f, 0.0f);   // 微分滤波20 稳定2，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
 
     // gimbal.pitch_angle.Init(2.f, 0.35f, 0.04f, 3.5f * 1.f, 0.0f);     //微分滤波10
     // gimbal.pitch_speed.Init(0.4f, 0.2f, 0.3f, 1.4f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力3 超调0.5 震荡频率0.3 震荡时间0.5
 
-    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      //微分滤波10（向下移动比向上移动更容易震荡）
-    // gimbal.pitch_speed.Init(0.45f, 0.35f, 0.2f, 1.8f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力4 超调0.2 震荡频率0.5 震荡时间0.2
+    // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 4.f * 1.f, 0.0f);      //微分滤波10
+    // gimbal.pitch_speed.Init(0.45f, 0.35f, 0.2f, 1.8f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力4 超调0.3 震荡频率0.5 震荡时间0.2
 
     // gimbal.pitch_angle.Init(2.f, 0.5f, 0.04f, 2.f * 1.f, 0.0f);    // 输出限幅控制最大速度  微分滤波10
     // gimbal.pitch_speed.Init(0.35f, 0.3f, 0.25f, 0.7f * 1.f, 0.0f);  // 输出限幅控制最大力矩 微分滤波20 稳定1，定在原位的能力2 超调0.5 震荡0.5
@@ -120,7 +123,7 @@ void RemoteAimingTargetSet()
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
     if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;// =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
@@ -223,7 +226,7 @@ void KeymouseAimingTargetSet()
         pitch_target = 0.f;
     }  // 死区设置，防止误漂移。
     /* 实测陀螺仪抬头为负，低头为正，第一人称，鼠标前移抬头，后移低头*/
-    gimbaltarget.pitch_target += pitch_target * 0.00085f;  // 根据鼠标灵敏度结合操作手的操作习惯实际测试后调整数值。测试鼠标DPI为1600。
+    gimbaltarget.pitch_target += pitch_target * 0.001f;  // 根据鼠标灵敏度结合操作手的操作习惯实际测试后调整数值。测试鼠标DPI为1600。
     VAL_LIMIT(gimbaltarget.pitch_target, -10.f, 30.0f);    // 抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);   // 陀螺仪向上为正，鼠标往下为正。前取负号，使得鼠标向上为正，抬头；符合操作习惯；
 
@@ -232,7 +235,7 @@ void KeymouseAimingTargetSet()
     if (yaw_target < 3.f && yaw_target > -3.f) {
         yaw_target = 0.f;
     }
-    gimbaltarget.yaw_target += yaw_target * 0.00075f;
+    gimbaltarget.yaw_target += yaw_target * 0.001f;
     VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 最大值为向左向右55度
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);    // 陀螺仪向左为正，鼠标往右为正。前取负号，使得鼠标向左为正，左转；符合操作习惯；
 }
@@ -350,6 +353,24 @@ void GimbalStop2TargetSet()
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = 0;
     gimbal.SetYawPosition(-gimbaltarget.yaw_target);
+
+    HaltOutput();
+}
+
+/**
+ * @brief      将输出计算结果置零，停止输出
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void HaltOutput()
+{
+    gimbal.pitch_output_pos = 0;
+    gimbal.pitch_output_speed = 0;
+    gimbal.yaw_output_speed = 0;
+    shoot.fric_output_[0] = 0;
+    shoot.fric_output_[1] = 0;
+    shoot.trig_output_ = 0;
 }
 
 /**
@@ -362,5 +383,18 @@ void TriggerReturnTargetSet()
 {
     // 拨弹盘目标值设置
     gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;
+    shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
+}
+
+/**
+ * @brief      退弹前，先让拨弹盘0速
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void TriggerZeroTargetSet()
+{
+    // 拨弹盘目标值设置
+    gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
     shoot.SetTriggerSpeed(gimbaltarget.turn_magazine_target);
 }

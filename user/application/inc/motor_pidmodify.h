@@ -43,6 +43,7 @@ void AutoAimingTargetSet();
 void GimbalStop1TargetSet();
 void GimbalStop2TargetSet();
 void TriggerReturnTargetSet();
+void TriggerZeroTargetSet();
 void MotorStart();
 #endif
 

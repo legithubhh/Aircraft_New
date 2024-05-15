@@ -68,97 +68,112 @@ void Arc_Draw(Graph_Data *image, char imagename[3], u32 Graph_Operate, u32 Graph
 
 void UITask()
 {
-    // 这里UI_PushUp_Counter判断都是很诡异的数字
-    // 就是为了任务完整执行一次，只会发送一组UI数据
-    static uint16_t UI_PushUp_Counter = 261;
-    static float Capacitance_X = 0;
+    // 为了不过多发送，占用资源，这里UI_PushUp_Counter判断都是质数
+    static uint16_t UI_PushUp_Counter = 80;
     UI_PushUp_Counter++;
-
     // ID判断
-    if (UI_PushUp_Counter % 1000 == 0) {
+    if (UI_PushUp_Counter > 500) {
         ID_Judge();
-        vTaskDelay(1);  // 发送一次数据，立马延时，防止堵塞。
-        UI_PushUp_Counter++;
+        vTaskDelay(10);  // 发送一次数据，立马延时，防止堵塞。
+        UI_PushUp_Counter = 90;
     }
 
-    if (UI_PushUp_Counter % 311 == 0) {
+    if (UI_PushUp_Counter % 101 == 0) {
         // 下横线
         for (int i = 0; i < 7; i++) {
             Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 6, UI_Color_Yellow, 1, 860 + 10 * i, 540 - 27 * i, 1060 - 10 * i, 540 - 27 * i);
         }
         UI_PushUp_Graphs(7, &UI_Graph7);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 331 == 0) {
+    if (UI_PushUp_Counter % 109 == 0) {
         // 竖线
         Line_Draw(&UI_Graph1[0].imageData[0], G_aim_mark[7], UI_Graph_Add, 6, UI_Color_Green, 1, 960, 300, 960, 780);
         UI_PushUp_Graphs(1, &UI_Graph1[0]);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 351 == 0) {
+    if (UI_PushUp_Counter % 127 == 0) {
         // 自瞄圆
         Circle_Draw(&UI_Graph1[1].imageData[0], (char *)"701", UI_Graph_Add, 7, UI_Color_Orange, 1, 960, 540, 60);
         UI_PushUp_Graphs(1, &UI_Graph1[1]);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 371 == 0) {
-        // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止），退弹次数计数
-        Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Add, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
+    if (UI_PushUp_Counter % 137 == 0) {
+        // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）
+        Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Add, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
         UI_PushUp_String(&UI_String[0]);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 391 == 0) {
+    if (UI_PushUp_Counter % 151 == 0) {
         // P轴Y轴角度；
-        Char_Draw(&UI_String[1].String, (char *)"201", UI_Graph_Add, 2, UI_Color_Pink, 12, 12, 2, 1460, 732, (char *)"Pitch:\nYaw:");
+        Char_Draw(&UI_String[1].String, (char *)"201", UI_Graph_Add, 2, UI_Color_Orange, 18, 15, 3, 1560, 832, (char *)"Pitch:\n\n  Yaw:");
         UI_PushUp_String(&UI_String[1]);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 421 == 0) {
+    if (UI_PushUp_Counter % 167 == 0) {
         // 卡弹状态，退弹次数计数；
-        Char_Draw(&UI_String[2].String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 12, 16, 2, 285, 800, (char *)"Block:\nReturn:");
+        Char_Draw(&UI_String[2].String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 12, 16, 2, 285, 800, (char *)"Block:\n\nReturn:");
         UI_PushUp_String(&UI_String[2]);
-        vTaskDelay(1);
+        vTaskDelay(10);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 179 == 0) {
+        // 卡弹状态，退弹次数计数；
+        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Add, 2, UI_Color_Pink, 12, 0, 2, 385, 800, (float)flag.trig_block_flag);
+        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Add, 2, UI_Color_Pink, 12, 0, 2, 385, 764, (float)flag.return_trig_count);
+        UI_PushUp_Graphs(2, &UI_Graph2[0]);
+        vTaskDelay(10);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 191 == 0) {
+        // P轴Y轴角度；
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1660, 832, INS.Roll);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1660, 779, INS.Yaw);
+        UI_PushUp_Graphs(2, &UI_Graph2[1]);
+        vTaskDelay(10);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 57 == 0) {
+        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 800, (float)flag.trig_block_flag);
+        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 764, (float)flag.return_trig_count);
+        UI_PushUp_Graphs(2, &UI_Graph2[0]);
+        vTaskDelay(10);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 37 == 0) {
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1660, 832, INS.Roll);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1660, 779, INS.Yaw);
+        UI_PushUp_Graphs(2, &UI_Graph2[1]);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 
     if (UI_PushUp_Counter % 31 == 0) {
-        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 345, 800, flag.trig_block_flag);
-        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 345, 800, flag.return_trig_count);
-        UI_PushUp_Graphs(2, &UI_Graph2[0]);
-        vTaskDelay(1);
-        UI_PushUp_Counter++;
-    }
-
-    if (UI_PushUp_Counter % 29 == 0) {
-        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 1510, 732, INS.Roll);
-        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Pink, 20, 3, 2, 1510, 712, INS.Yaw);
-        UI_PushUp_Graphs(2, &UI_Graph2[1]);
-        vTaskDelay(1);
-        UI_PushUp_Counter++;
-    }
-
-    if (UI_PushUp_Counter % 21 == 0) {
         if (flag.auto_flag == 0 && flag.fric_flag == 1) {
-            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tOFF");
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tOFF");
         } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
-            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tON ");
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tON ");
         } else if (flag.auto_flag == 1 && flag.fric_flag == 0) {
-            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tON ");
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tON ");
         } else if (flag.auto_flag == 0 && flag.fric_flag == 0) {
-            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 21, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
+            Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
         }
         UI_PushUp_String(&UI_String[0]);
-        vTaskDelay(1);
+        vTaskDelay(10);
         UI_PushUp_Counter++;
     }
 }
