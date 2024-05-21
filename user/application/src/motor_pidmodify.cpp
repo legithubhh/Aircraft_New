@@ -58,8 +58,11 @@ void PidSetInitial()
     /**
      * Yaw轴3508电机的PID参数初始化
      */
-    gimbal.yaw_angle.Init(30.f, 30.f, 2.5f, 50.f * 1.f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 3200.f * 1.f, 0.f);
+    gimbal.yaw_angle.Init(30.f, 30.f, 2.5f, 1500.f * 1.f, 0.f);  // 输出限幅控制最大速度
+    gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 10000.f * 1.f, 0.f);
+
+    // gimbal.yaw_angle.Init(30.f, 30.f, 2.5f, 50.f * 1.f, 0.f);  // 输出限幅控制最大速度
+    // gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 3200.f * 1.f, 0.f);
 
     // gimbal.yaw_angle.Init(66.f, 0.f, 2.05f, 66.f * 1.5f, 0.f);  // 输出限幅控制最大速度
     // gimbal.yaw_speed.Init(66.f, 0.f, 2.05f, 6534.f * 1.f, 0.f);
@@ -74,13 +77,26 @@ void PidSetInitial()
      * 然后如果定位能力满足需求，则调节保持速度环输出限幅不变，增大双环Kp，增大位置环输出限幅——从而增加响应灵敏度；
      * 如果灵敏度达到要求，此时可以解决超调与低频震荡，可以增减速度环Ki，调节双环Kd；
      * Ki的输出是滞后的，这也能在Kp突变时对反向的输出起到抵消作用，从而抑制了震荡；Kp与Ki相辅相成，相互促进又相互抑制；
-     * 微分滤波数值越大，微分环节对当前Kd的响应越小，输出越取决于以往Kd的平均值；有利于过滤较大跳变的影响保持稳定的输出，不利于抑制当前的输出震荡；
+     * 微分滤波数值越大，微分环节对当前Kd的响应越小，输出越取决于以往Kd的平均值；有利于过滤较大跳变的影响保持稳定的输出，不利于抑制当前的输出震荡，受时间影响较大；
      * 在Kp确定可行后，高频震荡，自震荡往往由Kd引起；超调以及低频震荡，由Kp引起，如果Ki超过稳态误差，也会由Ki引起；
      * 向下静态力矩0.05-0.4N*m，向上0.2-0.4N*m
+     *
+     * 位置环输出不限幅，速度环限幅，
      */
-    gimbal.pitch_angle.Init(1.2f, 3.f, 0.003f, 2.5f * 1.f, 0.0f);    // 微分滤波100（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
-    gimbal.pitch_speed.Init(1.2f, 1.5f, 0.003f, 1.2f * 1.f, 0.0f);  // 微分滤波100 稳定2，定位能力4 超调0.1 震荡频率0.1 震荡时间0.1
+    gimbal.pitch_angle.Init(0.9f, 2.f, 0.007f, 5.f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    gimbal.pitch_speed.Init(1.0f, 1.5f, 0.01f, 3.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
 
+    // gimbal.pitch_angle.Init(0.6f, 5.f, 0.15f, 5.f * 1.f, 0.0f);   // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    // gimbal.pitch_speed.Init(1.2f, 6.f, 0.06f, 5.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
+
+    // gimbal.pitch_angle.Init(1.0f, 3.f, 0.3f, 10.f * 1.f, 0.0f);    // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    // gimbal.pitch_speed.Init(0.9f, 5.f, 0.04f, 10.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力4 超调0.15 震荡频率0.15 震荡时间0.1
+
+    // gimbal.pitch_angle.Init(1.f, 3.0f, 0.2f, 2.5f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    // gimbal.pitch_speed.Init(1.f, 6.f, 0.2f, 0.8f * 1.f, 0.0f);  // 微分滤波1 稳定2，定位能力4 超调0.2 震荡频率0.1 震荡时间0.1
+
+    // gimbal.pitch_angle.Init(1.2f, 3.f, 0.003f, 2.5f * 1.f, 0.0f);    // 微分滤波100（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    // gimbal.pitch_speed.Init(1.2f, 1.5f, 0.003f, 1.2f * 1.f, 0.0f);  // 微分滤波100 稳定2，定位能力4 超调0.2 震荡频率0.1 震荡时间0.1
 
     // gimbal.pitch_angle.Init(2.f, 0.35f, 0.04f, 3.5f * 1.f, 0.0f);     //微分滤波10
     // gimbal.pitch_speed.Init(0.4f, 0.2f, 0.3f, 1.4f * 1.f, 0.0f);  //微分滤波20 稳定2，定位能力3 超调0.5 震荡频率0.3 震荡时间0.5
@@ -209,13 +225,13 @@ void KeymouseAimingTargetSet()
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 1) {
-        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
+        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 2) {
-        gimbaltarget.turn_magazine_target = 3.5f * 60.0f * 36.0f;
+        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;

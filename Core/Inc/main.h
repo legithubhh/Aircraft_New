@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define IMAGE_RX_Pin GPIO_PIN_7
+#define IMAGE_RX_GPIO_Port GPIOB
 #define REMOTE_RX_Pin GPIO_PIN_11
 #define REMOTE_RX_GPIO_Port GPIOC
 #define REFEREE_RX_Pin GPIO_PIN_9

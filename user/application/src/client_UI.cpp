@@ -36,7 +36,7 @@ UI_Graph1_t UI_Graph1[2];
 UI_Graph2_t UI_Graph2[2];
 UI_Graph5_t UI_Graph5;
 UI_Graph7_t UI_Graph7;
-UI_String_t UI_String[4];
+UI_String_t UI_String[5];
 UI_Delete_t UI_Delete;
 
 char XTL[2] = "G";
@@ -74,7 +74,7 @@ void UITask()
     // ID判断
     if (UI_PushUp_Counter > 500) {
         ID_Judge();
-        vTaskDelay(10);  // 发送一次数据，立马延时，防止堵塞。
+        vTaskDelay(15);  // 发送一次数据，立马延时，防止堵塞。
         UI_PushUp_Counter = 90;
     }
 
@@ -84,7 +84,7 @@ void UITask()
             Line_Draw(&UI_Graph7.imageData[i], G_aim_mark[i], UI_Graph_Add, 6, UI_Color_Yellow, 1, 860 + 10 * i, 540 - 27 * i, 1060 - 10 * i, 540 - 27 * i);
         }
         UI_PushUp_Graphs(7, &UI_Graph7);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
@@ -92,7 +92,7 @@ void UITask()
         // 竖线
         Line_Draw(&UI_Graph1[0].imageData[0], G_aim_mark[7], UI_Graph_Add, 6, UI_Color_Green, 1, 960, 300, 960, 780);
         UI_PushUp_Graphs(1, &UI_Graph1[0]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
@@ -100,7 +100,7 @@ void UITask()
         // 自瞄圆
         Circle_Draw(&UI_Graph1[1].imageData[0], (char *)"701", UI_Graph_Add, 7, UI_Color_Orange, 1, 960, 540, 60);
         UI_PushUp_Graphs(1, &UI_Graph1[1]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
@@ -108,15 +108,15 @@ void UITask()
         // 各种标志位名称：摩擦轮状态（ON为开启，OFF为停止）、自瞄状态（ON为开启，OFF为停止）
         Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Add, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
         UI_PushUp_String(&UI_String[0]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
     if (UI_PushUp_Counter % 151 == 0) {
         // P轴Y轴角度；
-        Char_Draw(&UI_String[1].String, (char *)"201", UI_Graph_Add, 2, UI_Color_Orange, 18, 15, 3, 1560, 832, (char *)"Pitch:\n\n  Yaw:");
+        Char_Draw(&UI_String[1].String, (char *)"201", UI_Graph_Add, 2, UI_Color_Orange, 18, 15, 3, 1410, 712, (char *)"Pitch:\n\n  Yaw:");
         UI_PushUp_String(&UI_String[1]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
@@ -124,7 +124,7 @@ void UITask()
         // 卡弹状态，退弹次数计数；
         Char_Draw(&UI_String[2].String, (char *)"202", UI_Graph_Add, 2, UI_Color_Pink, 12, 16, 2, 285, 800, (char *)"Block:\n\nReturn:");
         UI_PushUp_String(&UI_String[2]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
@@ -133,36 +133,71 @@ void UITask()
         Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Add, 2, UI_Color_Pink, 12, 0, 2, 385, 800, (float)flag.trig_block_flag);
         Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Add, 2, UI_Color_Pink, 12, 0, 2, 385, 764, (float)flag.return_trig_count);
         UI_PushUp_Graphs(2, &UI_Graph2[0]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
     if (UI_PushUp_Counter % 191 == 0) {
         // P轴Y轴角度；
-        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1660, 832, INS.Roll);
-        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1660, 779, INS.Yaw);
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.Yaw);
         UI_PushUp_Graphs(2, &UI_Graph2[1]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 57 == 0) {
-        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 800, (float)flag.trig_block_flag);
-        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 764, (float)flag.return_trig_count);
-        UI_PushUp_Graphs(2, &UI_Graph2[0]);
-        vTaskDelay(10);
+    if (UI_PushUp_Counter % 199 == 0) {
+        // Life?；
+        Char_Draw(&UI_String[3].String, (char *)"401", UI_Graph_Add, 4, UI_Color_Pink, 24, 6, 4, 910, 884, (char *)"Life?");
+        UI_PushUp_String(&UI_String[3]);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
-    if (UI_PushUp_Counter % 37 == 0) {
-        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1660, 832, INS.Roll);
-        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1660, 779, INS.Yaw);
-        UI_PushUp_Graphs(2, &UI_Graph2[1]);
-        vTaskDelay(10);
+    if (UI_PushUp_Counter % 211 == 0) {
+        // Just So So!；
+        Char_Draw(&UI_String[4].String, (char *)"402", UI_Graph_Add, 4, UI_Color_Pink, 30, 12, 5, 810, 824, (char *)"Just So So!");
+        UI_PushUp_String(&UI_String[4]);
+        vTaskDelay(15);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 29 == 0) {
+        if (flag.auto_flag == 1) {
+            Line_Draw(&UI_Graph5.imageData[0], (char *)"702", UI_Graph_Add, 7, UI_Color_Pink, 1, 900, 540, 1020, 540);
+            Line_Draw(&UI_Graph5.imageData[1], (char *)"703", UI_Graph_Add, 7, UI_Color_Pink, 1, 960 + 2, 540 + 2, 960 + 15, 540 + 15);
+            Line_Draw(&UI_Graph5.imageData[2], (char *)"704", UI_Graph_Add, 7, UI_Color_Pink, 1, 960 + 2, 540 - 2, 960 + 15, 540 - 15);
+            Line_Draw(&UI_Graph5.imageData[3], (char *)"705", UI_Graph_Add, 7, UI_Color_Pink, 1, 960 - 2, 540 + 2, 960 - 15, 540 + 15);
+            Line_Draw(&UI_Graph5.imageData[4], (char *)"706", UI_Graph_Add, 7, UI_Color_Pink, 1, 960 - 2, 540 - 2, 960 - 15, 540 - 15);
+        } else if (flag.auto_flag == 0) {
+            Line_Draw(&UI_Graph5.imageData[0], (char *)"702", UI_Graph_Del, 7, UI_Color_Pink, 1, 900, 540, 1020, 540);
+            Line_Draw(&UI_Graph5.imageData[1], (char *)"703", UI_Graph_Del, 7, UI_Color_Pink, 1, 960 + 2, 540 + 2, 960 + 15, 540 + 15);
+            Line_Draw(&UI_Graph5.imageData[2], (char *)"704", UI_Graph_Del, 7, UI_Color_Pink, 1, 960 + 2, 540 - 2, 960 + 15, 540 - 15);
+            Line_Draw(&UI_Graph5.imageData[3], (char *)"705", UI_Graph_Del, 7, UI_Color_Pink, 1, 960 - 2, 540 + 2, 960 - 15, 540 + 15);
+            Line_Draw(&UI_Graph5.imageData[4], (char *)"706", UI_Graph_Del, 7, UI_Color_Pink, 1, 960 - 2, 540 - 2, 960 - 15, 540 - 15);
+        }
+        UI_PushUp_Graphs(5, &UI_Graph5);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 
     if (UI_PushUp_Counter % 31 == 0) {
+        Float_Draw(&UI_Graph2[0].imageData[0], (char *)"203", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 800, (float)flag.trig_block_flag);
+        Float_Draw(&UI_Graph2[0].imageData[1], (char *)"204", UI_Graph_Change, 2, UI_Color_Pink, 12, 0, 2, 385, 764, (float)flag.return_trig_count);
+        UI_PushUp_Graphs(2, &UI_Graph2[0]);
+        vTaskDelay(15);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 37 == 0) {
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.Yaw);
+        UI_PushUp_Graphs(2, &UI_Graph2[1]);
+        vTaskDelay(15);
+        UI_PushUp_Counter++;
+    }
+
+    if (UI_PushUp_Counter % 41 == 0) {
         if (flag.auto_flag == 0 && flag.fric_flag == 1) {
             Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tON \nAuto:\tOFF");
         } else if (flag.auto_flag == 1 && flag.fric_flag == 1) {
@@ -173,7 +208,7 @@ void UITask()
             Char_Draw(&UI_String[0].String, (char *)"501", UI_Graph_Change, 5, UI_Color_Green, 18, 20, 3, 285, 682, (char *)"Fric:\tOFF\nAuto:\tOFF");
         }
         UI_PushUp_String(&UI_String[0]);
-        vTaskDelay(10);
+        vTaskDelay(15);
         UI_PushUp_Counter++;
     }
 }
