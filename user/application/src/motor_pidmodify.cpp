@@ -53,7 +53,7 @@ void PidSetInitial()
      * 拨弹盘2006电机的PID参数初始化
      */
     shoot.trigger_pos_.Init(10.f, 0.f, 0.f, 1.f * 2160.f, 0.f);   // 依据减速比(36/1*60)=2160*n得n转每秒（最快）
-    shoot.trigger_speed_.Init(5.f, 0.f, 0.f, 1000.f * 6.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
+    shoot.trigger_speed_.Init(10.f, 0.f, 0.f, 1000.f * 9.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
 
     /**
      * Yaw轴3508电机的PID参数初始化
@@ -83,7 +83,7 @@ void PidSetInitial()
      *
      * 位置环输出不限幅，速度环限幅，
      */
-    gimbal.pitch_angle.Init(0.9f, 2.f, 0.007f, 5.f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    gimbal.pitch_angle.Init(1.0f, 2.f, 0.007f, 5.f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
     gimbal.pitch_speed.Init(1.0f, 1.5f, 0.01f, 3.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
 
     // gimbal.pitch_angle.Init(0.6f, 5.f, 0.15f, 5.f * 1.f, 0.0f);   // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
@@ -266,7 +266,7 @@ void KeymouseAimingTargetSet()
 }
 
 /**
- * @brief      自瞄模式，电机目标值设置
+ * @brief      键鼠自瞄模式，电机目标值设置
  *   @arg       None
  * @retval      None
  * @note        None
@@ -305,7 +305,7 @@ void AutoAimingTargetSet()
 
     // Pitch轴目标值设置
     gimbaltarget.pitch_target = GetTargetPitch();
-    VAL_LIMIT(gimbaltarget.pitch_target, 10.f, -30.0f);  // 抬头最大值角度为10度，低头最大角度为30度
+    VAL_LIMIT(gimbaltarget.pitch_target, -30.f, 10.0f);  // 抬头最大值角度为10度，低头最大角度为30度
     gimbal.SetPitchPosition(gimbaltarget.pitch_target);  // 陀螺仪向上为正，视觉低头给负值，抬头给正值，符合陀螺仪值；
     // Yaw轴目标值设置
     gimbaltarget.yaw_target = GetTargetYaw();
@@ -313,6 +313,36 @@ void AutoAimingTargetSet()
     gimbal.SetYawPosition(gimbaltarget.yaw_target);     // 陀螺仪向左为正，视觉左转给正值，右转给负值，符合陀螺仪值；
 
     flag.last_auto_flag = 1;
+}
+
+/**
+ * @brief      遥控器自瞄测试，电机目标值设置
+ *   @arg       None
+ * @retval      None
+ * @note        None
+ */
+void AutoAimingTargetTest()
+{
+    // 摩擦轮目标值设置
+    gimbaltarget.friction_wheel_target = 0.f;
+    shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
+
+    // 拨弹盘目标值设置
+    gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
+    shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
+
+    // Pitch轴目标值设置
+    pitch_target = GetTargetPitch();
+    gimbaltarget.pitch_target = pitch_target;
+    VAL_LIMIT(gimbaltarget.pitch_target, -30.f, 10.0f);  // 抬头最大值角度为10度，低头最大角度为30度
+    gimbal.SetPitchPosition(gimbaltarget.pitch_target);  // 陀螺仪向上为正，视觉低头给负值，抬头给正值，符合陀螺仪值；
+    // Yaw轴目标值设置
+    yaw_target = GetTargetYaw();
+    gimbaltarget.yaw_target = yaw_target;
+    VAL_LIMIT(gimbaltarget.yaw_target, -55.0f, 55.0f);  // 向左向右55度
+    gimbal.SetYawPosition(gimbaltarget.yaw_target);     // 陀螺仪向左为正，视觉左转给正值，右转给负值，符合陀螺仪值；
+
+    // 先拨至发弹急停模式再切换到键鼠或者遥控器模式；
 }
 
 /**

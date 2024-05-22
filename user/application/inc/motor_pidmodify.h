@@ -41,6 +41,7 @@ void RemoteAimingTargetSet();
 void KeymouseAimingTargetSet();
 void AutoAimingTargetSet();
 void GimbalStop1TargetSet();
+void AutoAimingTargetTest();
 void GimbalStop2TargetSet();
 void TriggerReturnTargetSet();
 void TriggerZeroTargetSet();

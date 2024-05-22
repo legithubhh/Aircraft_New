@@ -53,7 +53,8 @@ typedef struct
 class Pid
 {
    public:
-   float i_out_;
+    float ref_, measure_, last_measure_;
+    PidErrorHandler error_handle;
     void Init(float _kp, float _ki, float _kd, float _max_out, float _dead_band)
     {
         kp_ = _kp;
@@ -82,12 +83,18 @@ class Pid
         measure_ = _measure;
     };
 
-    float GetMeasure(){
+    float GetMeasure()
+    {
         return measure_;
     }
 
-    float GetError(){
+    float GetError()
+    {
         return err_;
+    }
+
+    float GetRef(){
+        return ref_;
     }
 
     float Calculate();
@@ -110,7 +117,6 @@ class Pid
     float dead_band_;
 
     uint8_t improve_;
-    PidErrorHandler error_handle;
 
     float integral_limit_;
     float coef_a_;
@@ -118,9 +124,8 @@ class Pid
     float output_lpf_rc_;
     float derivative_lpf_rc_;
 
-    float ref_, measure_, last_measure_;
     float err_, last_err_;
-    float p_out_, d_out_, last_d_out_, i_term_, last_i_term_;
+    float p_out_, d_out_, i_out_, last_d_out_, i_term_, last_i_term_;
     float output_, last_output_;
 
     uint32_t DWT_CNT;

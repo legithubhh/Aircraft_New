@@ -80,7 +80,7 @@ void GimbalTask()
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);
     }
 
-    // 两种急停控制
+    // 两种急停控制加自瞄测试
     if (remote.GetS1() != 2 && remote.GetS2() == 2) {
         DjiMotorSend(&hcan1, 0x200, (int16_t)shoot.fric_output_[0], (int16_t)shoot.fric_output_[1], (int16_t)gimbal.yaw_output_speed, (int16_t)shoot.trig_output_);
         gimbal.pitch_motor.MITSend(&hcan1, 0.f, 0.f, 0.f, 0.f, gimbal.pitch_output_torque);

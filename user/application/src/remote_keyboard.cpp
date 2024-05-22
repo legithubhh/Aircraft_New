@@ -42,6 +42,7 @@ void PidFlagInit();
 void PidModeSwitch();
 void PidAdjust();
 void PidAdjustByError();
+void TriggerBlockCheck();
 
 void ModeTask()
 {
@@ -64,12 +65,12 @@ void ModeTask()
     // 右拨杆在上，遥控器控制模式
     if (remote.GetS2() == 1) {
         /*左拨杆在上——只转摩擦轮模式，中——拨弹盘转，下——退弹*/
-            PidAdjust();
-            RemoteAimingTargetSet();
-            MotorStart();
+        PidAdjust();
+        RemoteAimingTargetSet();
+        MotorStart();
     }
-    if(remote.GetS1() != flag.last_s1 && remote.GetS2()==1){
-        if(remote.GetS1() == 2){
+    if (remote.GetS1() != flag.last_s1 && remote.GetS2() == 1) {
+        if (remote.GetS1() == 2) {
             flag.return_trig_count++;
         }
     }
@@ -102,9 +103,13 @@ void ModeTask()
     // 右拨杆在下，急停模式
     if (remote.GetS2() == 2) {
         // 左拨杆在上或中，发弹急停 OR 左拨杆在下，切换到全停模式（拨弹盘，摩擦轮目标速度设为0，双轴目标位置设为0度,输出强制为0,电机CAN信号直接发送0）
-        if (remote.GetS1() == 1 || remote.GetS1() == 3) {
+        if (remote.GetS1() == 1) {
             PidAdjust();
             GimbalStop1TargetSet();
+            MotorStart();
+        } else if (remote.GetS1() == 3) {
+            PidAdjust();
+            AutoAimingTargetTest();
             MotorStart();
         } else {
             PidAdjust();
@@ -112,14 +117,11 @@ void ModeTask()
             MotorStart();
         }
     }
-    //堵转检测
-    shoot.trigger_speed_.ErrorHandle();
-    if(shoot.trigger_speed_.GetErrorHandle() == 1)
-    {
+    // 堵转检测
+    TriggerBlockCheck();
+    if (shoot.trigger_speed_.GetErrorHandle() == 1) {
         flag.trig_block_flag = 1;
-    }
-    else
-    {
+    } else {
         flag.trig_block_flag = 0;
     }
     // 退弹模式，拨弹盘反转0.1s，但急停模式优先
@@ -134,6 +136,21 @@ void ModeTask()
         shoot.trigger_speed_.ResetErrorHandle();
         osDelay(50);
         flag.last_return_trig_count = flag.return_trig_count;
+    }
+}
+
+void TriggerBlockCheck()
+{
+    if ((remote.GetS1() == 3 && remote.GetS2() == 1) || (remote.GetS2() == 3 && flag.trig_flag == 1)) {
+        osDelay(20);
+        if (fabs(shoot.trigger_speed_.ref_ - shoot.trigger_speed_.measure_) / fabs(shoot.trigger_speed_.ref_) > 0.9f) {
+            shoot.trigger_speed_.error_handle.ERRORCount++;
+        } else {
+            shoot.trigger_speed_.error_handle.ERRORCount = 0;
+        }
+        if (shoot.trigger_speed_.error_handle.ERRORCount > 500) {
+            shoot.trigger_speed_.error_handle.ERRORType = PID_MOTOR_BLOCKED_ERROR;
+        }
     }
 }
 
