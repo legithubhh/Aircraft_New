@@ -207,4 +207,4 @@ extern "C" {
 }
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __BMI088_REG_H_ */

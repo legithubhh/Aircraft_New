@@ -19,7 +19,6 @@
 #include "cmsis_os.h"
 #include "gimbal.h"
 #include "motor_pidmodify.h"
-#include "referee.h"
 #include "remote.h"
 #include "remote_keyboard.h"
 #include "shoot.h"

@@ -7,15 +7,15 @@
  *  V1.0.0      RM2024      Jason Li        Victory
  *******************************************************************************
  * @attention :
- * s1:1       s2:1      遥控模式：摩擦轮开，拨弹盘关
- * s1:3       s2:1      遥控模式：摩擦轮开，拨弹盘低速
- * s1:2       s2:1      遥控模式：摩擦轮开，拨弹盘高速
- * s1:1       s2:3      键鼠模式（按F开关摩擦轮，鼠标左键开关拨弹盘，鼠标右键开关自瞄模式，下同）：拨弹盘低速
- * s1:3       s2:3      键鼠模式：拨弹盘中速
- * s1:2       s2:3      键鼠模式：拨弹盘高速（如果开启自瞄模式，拨弹盘默认为高速）
- * s1:1       s2:2      发弹急停模式：摩擦轮速度设为0，拨弹盘速度设为0，可旋转双轴
- * s1:3       s2:2      发弹急停模式：摩擦轮速度设为0，拨弹盘速度设为0，可旋转双轴
- * s1:2       s2:2      急停模式：摩擦轮，拨弹盘，双轴输出都发0
+ * s1:1 上    s2:1 上     遥控模式：摩擦轮开，拨弹盘关
+ * s1:3 中    s2:1        遥控模式：摩擦轮开，拨弹盘开
+ * s1:2 下    s2:1        遥控模式：摩擦轮开，拨弹盘退弹
+ * s1:1       s2:3 中     键鼠模式（按F开关摩擦轮，鼠标左键开关拨弹盘，鼠标右键开关自瞄模式，下同）：拨弹盘低速
+ * s1:3       s2:3        键鼠模式：拨弹盘中速
+ * s1:2       s2:3        键鼠模式：拨弹盘高速（如果开启自瞄模式，拨弹盘默认为高速）
+ * s1:1       s2:2 下     发弹急停模式：摩擦轮速度设为0，拨弹盘速度设为0，可遥控旋转双轴
+ * s1:3       s2:2        自瞄测试模式：摩擦轮速度设为0，拨弹盘速度设为0，自瞄跟随目标
+ * s1:2       s2:2        急停模式：摩擦轮，拨弹盘，双轴输出都发0
  * 键鼠控制按键：F键开关摩擦轮，R键进行退弹，鼠标左键开关拨弹盘，鼠标右键开关自瞄模式
  *******************************************************************************
  *  Copyright (c) 2024 Reborn Team, USTB.
@@ -26,16 +26,15 @@
 #include "remote_keyboard.h"
 
 #include "cmsis_os.h"
-#include "gimbal.h"
 #include "motor_pidmodify.h"
 #include "referee.h"
 #include "remote.h"
-#include "shoot.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 Flag flag;
+float ab,ac;
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void PidFlagInit();
@@ -46,6 +45,9 @@ void TriggerBlockCheck();
 
 void ModeTask()
 {
+    ab =  shoot.trigger_speed_.GetMeasure();
+    ac = shoot.trigger_speed_.GetRef();
+
     // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
     for (uint8_t i = 0; i < 16; i++) {
         if (ref_keymouse.referee_key_press[i] != flag.last_key_press[i]) {
@@ -121,6 +123,7 @@ void ModeTask()
     TriggerBlockCheck();
     if (shoot.trigger_speed_.GetErrorHandle() == 1) {
         flag.trig_block_flag = 1;
+        flag.return_trig_count++;
     } else {
         flag.trig_block_flag = 0;
     }
@@ -142,8 +145,7 @@ void ModeTask()
 void TriggerBlockCheck()
 {
     if ((remote.GetS1() == 3 && remote.GetS2() == 1) || (remote.GetS2() == 3 && flag.trig_flag == 1)) {
-        osDelay(20);
-        if (fabs(shoot.trigger_speed_.ref_ - shoot.trigger_speed_.measure_) / fabs(shoot.trigger_speed_.ref_) > 0.9f) {
+        if (fabs(shoot.trigger_speed_.ref_ - shoot.trigger_speed_.measure_) / fabs(shoot.trigger_speed_.ref_) > 0.95f) {
             shoot.trigger_speed_.error_handle.ERRORCount++;
         } else {
             shoot.trigger_speed_.error_handle.ERRORCount = 0;

@@ -49,9 +49,6 @@ void Gimbal::MotorInit()
     yaw_motor.pdji_motor_instance->pCanCallBack = YawMotorCallback;
     pitch_motor.Init(MIT, 0x54, 0x32, &hcan1);
     pitch_motor.pdji_motor_instance->pCanCallBack = PitchMotorCallback;
-    do {
-        pitch_motor.Enable(&hcan1);  // 使能电机
-    } while (pitch_motor.enanble_flag == 0);
     // DWT_Delay(1.f);
     // do {
     //     pitch_motor.SaveZero(&hcan1);  // 初始化时保存当前位置为零点

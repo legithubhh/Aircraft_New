@@ -15,11 +15,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "motor_pidmodify.h"
 
-#include "gimbal.h"
 #include "ins.h"
 #include "remote.h"
 #include "remote_keyboard.h"
-#include "shoot.h"
 #include "user_lib.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
@@ -53,7 +51,7 @@ void PidSetInitial()
      * 拨弹盘2006电机的PID参数初始化
      */
     shoot.trigger_pos_.Init(10.f, 0.f, 0.f, 1.f * 2160.f, 0.f);   // 依据减速比(36/1*60)=2160*n得n转每秒（最快）
-    shoot.trigger_speed_.Init(10.f, 0.f, 0.f, 1000.f * 9.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
+    shoot.trigger_speed_.Init(5.f, 1.f, 0.f, 1000.f * 9.f, 0.f);  // 限定最大值，防止突震，最大输出-10000-10000
 
     /**
      * Yaw轴3508电机的PID参数初始化
@@ -148,7 +146,7 @@ void RemoteAimingTargetSet()
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
     if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;

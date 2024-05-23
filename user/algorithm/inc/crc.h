@@ -57,4 +57,4 @@ extern "C" {
 }
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __CRC_H_ */

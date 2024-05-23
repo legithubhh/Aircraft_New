@@ -132,4 +132,4 @@ extern void BMI088_Read(IMU_Data_t *bmi088);
 }
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __BMI088_DRIVER_H_ */

@@ -13,8 +13,8 @@
  *******************************************************************************
  */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __KALMAN_FILTER_H
-#define __KALMAN_FILTER_H
+#ifndef __KALMAN_FILTER_H_
+#define __KALMAN_FILTER_H_
 
 #ifdef __cplusplus
 
@@ -120,4 +120,4 @@ float *Kalman_Filter_Update(KalmanFilter_t *kf);
 
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __KALMAN_FILTER_H_ */

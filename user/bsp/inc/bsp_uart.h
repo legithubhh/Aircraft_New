@@ -60,4 +60,4 @@ void UartInit(UartInstance *_pinstance);
 }
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __BSP_UART_H_ */

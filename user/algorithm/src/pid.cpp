@@ -189,15 +189,16 @@ void Pid::OutputLimit()
  */
 void Pid::ErrorHandle()
 {
-    if (ref_ > 0.1f || ref_ < -0.1f) {
-        if (fabs(ref_ - measure_) / fabs(ref_) > 0.8f) {
-            error_handle.ERRORCount++;
-        } else {
-            error_handle.ERRORCount = 0;
-        }
-        if (error_handle.ERRORCount > 10) {
-            error_handle.ERRORType = PID_MOTOR_BLOCKED_ERROR;
-        }
+    if (fabsf(output_) < max_out_ * 0.001f || fabsf(ref_) < 0.0001f)
+        return;
+    if (fabsf(ref_ - measure_) / fabsf(ref_) > 0.95f) {
+        error_handle.ERRORCount++;
+    } else {
+        error_handle.ERRORCount = 0;
+    }
+
+    if (error_handle.ERRORCount > 500) {
+        error_handle.ERRORType = PID_MOTOR_BLOCKED_ERROR;
     }
 }
 

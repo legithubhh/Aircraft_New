@@ -48,4 +48,4 @@ extern SPI_HandleTypeDef *BMI088_SPI;
 }
 #endif
 
-#endif /* __FILE_H_ */
+#endif /* __BMI088_MIDDLEWARE_H_ */

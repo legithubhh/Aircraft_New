@@ -19,7 +19,6 @@
 #include "bsp_dwt.h"
 #include "crc.h"
 #include "ins.h"
-#include "referee.h"
 #include "usbd_cdc.h"
 #include "usbd_cdc_if.h"
 #include "user_lib.h"
