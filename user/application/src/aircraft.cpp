@@ -86,7 +86,6 @@ void GimbalTask()
     }
 
     if (remote.GetS1() == 2 && remote.GetS2() == 2) {
-        DjiMotorSend(&hcan1, 0x1FF, 0, 0, 0, 0);
         DjiMotorSend(&hcan1, 0x200, 0, 0, 0, 0);
         // do {
         //  gimbal.pitch_motor.SaveZero(&hcan1);  // 初始化时保存当前位置为零点

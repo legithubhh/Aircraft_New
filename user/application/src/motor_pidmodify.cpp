@@ -81,8 +81,12 @@ void PidSetInitial()
      *
      * 位置环输出不限幅，速度环限幅，
      */
-    gimbal.pitch_angle.Init(1.0f, 2.f, 0.007f, 5.f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
-    gimbal.pitch_speed.Init(1.0f, 1.5f, 0.01f, 3.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
+
+    gimbal.pitch_angle.Init(0.8f, 2.8f, 0.005f, 5.f * 1.f, 0.0f);  // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    gimbal.pitch_speed.Init(0.9f, 1.5f, 0.005f, 3.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
+
+    // gimbal.pitch_angle.Init(0.8f, 2.f, 0.005f, 5.f * 1.f, 0.0f);   // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
+    // gimbal.pitch_speed.Init(0.9f, 1.5f, 0.008f, 3.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
 
     // gimbal.pitch_angle.Init(0.6f, 5.f, 0.15f, 5.f * 1.f, 0.0f);   // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
     // gimbal.pitch_speed.Init(1.2f, 6.f, 0.06f, 5.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
@@ -146,7 +150,7 @@ void RemoteAimingTargetSet()
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
     if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
@@ -223,13 +227,13 @@ void KeymouseAimingTargetSet()
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 1) {
-        gimbaltarget.turn_magazine_target = 1.f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 1.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 3) {
         gimbaltarget.turn_magazine_target = 2.f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else if (flag.trig_flag == 1 && remote.GetS1() == 2) {
-        gimbaltarget.turn_magazine_target = 3.f * 60.0f * 36.0f;
+        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;

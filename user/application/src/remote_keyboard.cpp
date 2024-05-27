@@ -145,12 +145,12 @@ void ModeTask()
 void TriggerBlockCheck()
 {
     if ((remote.GetS1() == 3 && remote.GetS2() == 1) || (remote.GetS2() == 3 && flag.trig_flag == 1)) {
-        if (fabs(shoot.trigger_speed_.ref_ - shoot.trigger_speed_.measure_) / fabs(shoot.trigger_speed_.ref_) > 0.95f) {
+        if (fabs(shoot.trigger_speed_.ref_ - shoot.trigger_speed_.measure_) / fabs(shoot.trigger_speed_.ref_) > 0.98f) {
             shoot.trigger_speed_.error_handle.ERRORCount++;
         } else {
             shoot.trigger_speed_.error_handle.ERRORCount = 0;
         }
-        if (shoot.trigger_speed_.error_handle.ERRORCount > 500) {
+        if (shoot.trigger_speed_.error_handle.ERRORCount > 800) {
             shoot.trigger_speed_.error_handle.ERRORType = PID_MOTOR_BLOCKED_ERROR;
         }
     }
