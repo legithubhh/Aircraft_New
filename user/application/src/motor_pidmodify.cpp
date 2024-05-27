@@ -83,10 +83,10 @@ void PidSetInitial()
      */
 
     gimbal.pitch_angle.Init(0.8f, 2.8f, 0.005f, 5.f * 1.f, 0.0f);  // 24.5.28稳定版本
-    gimbal.pitch_speed.Init(0.9f, 1.5f, 0.005f, 3.f * 1.f, 0.0f);  // 
+    gimbal.pitch_speed.Init(0.9f, 1.5f, 0.005f, 3.f * 1.f, 0.0f);
 
     // gimbal.pitch_angle.Init(1.0f, 2.f, 0.007f, 5.f * 1.f, 0.0f);  // 分区赛前稳定版本
-    // gimbal.pitch_speed.Init(1.0f, 1.5f, 0.01f, 3.f * 1.f, 0.0f);  
+    // gimbal.pitch_speed.Init(1.0f, 1.5f, 0.01f, 3.f * 1.f, 0.0f);
 
     // gimbal.pitch_angle.Init(0.6f, 5.f, 0.15f, 5.f * 1.f, 0.0f);   // 微分滤波1（位置环kI作为主要输出，来延缓输出，抑制震荡，同时速度环Kp作为主要输出，快速响应）
     // gimbal.pitch_speed.Init(1.2f, 6.f, 0.06f, 5.f * 1.f, 0.0f);  // 微分滤波1 稳定3，定位能力3 超调0.1 震荡频率0.1 震荡时间0.1
