@@ -60,12 +60,12 @@ void Gimbal::MotorInit()
  */
 void Gimbal::Control()
 {
-    yaw_angle.SetMeasure(INS.YawTotalAngle);
+    yaw_angle.SetMeasure(INS.YawTotalAngle + yaw_modify);
     yaw_speed.SetRef(yaw_angle.Calculate());
     yaw_speed.SetMeasure(INS.Gyro[YAW_AXIS]);
     yaw_output_speed = yaw_speed.Calculate();
 
-    pitch_angle.SetMeasure(INS.Roll);
+    pitch_angle.SetMeasure(INS.Roll + pitch_modify);
     pitch_speed.SetRef(pitch_angle.Calculate());
     pitch_speed.SetMeasure(INS.Gyro[ROLL_AXIS]);
     pitch_output_torque = -pitch_speed.Calculate();  // 可以考虑加前馈，目前不需要；

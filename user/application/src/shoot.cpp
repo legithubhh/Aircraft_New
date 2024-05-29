@@ -49,8 +49,8 @@ static void TriggerMotorCallback();
 
 void Shoot::PidInit()
 {
-    fric_speed_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 20.f, 0.0f, 0.0f, 0.0f, 0.0f);//空转i_out为20
-    fric_speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 20.f, 0.0f, 0.0f, 0.0f, 0.0f);
+    fric_speed_[0].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 50.f, 0.0f, 0.0f, 0.0f, 0.0f);//空转i_out为20
+    fric_speed_[1].Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 50.f, 0.0f, 0.0f, 0.0f, 0.0f);
     trigger_pos_.Inprovement(PID_IMPROVE_NONE, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     trigger_speed_.Inprovement(PID_TRAPEZOID_INTEGRAL | PID_INTEGRAL_LIMIT, 500.0f, 0.0f, 0.0f, 0.0f, 0.0f);//空转i_out为400
 }

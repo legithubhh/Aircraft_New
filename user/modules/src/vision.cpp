@@ -22,6 +22,7 @@
 #include "usbd_cdc.h"
 #include "usbd_cdc_if.h"
 #include "user_lib.h"
+#include "gimbal.h"
 /* Private macro -------------------------------------------------------------*/
 #define PI 3.1415927f
 /* Private constants ---------------------------------------------------------*/
@@ -57,8 +58,8 @@ void Vision::Encode()
     }
     send_.reserved = 0;
     send_.mode = 1;
-    send_.pitch = Math::DegToRad(INS.Roll);  // 实际安装后Roll为pitch，陀螺仪向左向上为正，视觉向左向上为正
-    send_.yaw = Math::DegToRad(INS.Yaw);
+    send_.pitch = Math::DegToRad(INS.Roll + gimbal.pitch_modify);  // 实际安装后Roll为pitch，陀螺仪向左向上为正，视觉向左向上为正
+    send_.yaw = Math::DegToRad(INS.YawTotalAngle + gimbal.yaw_modify);
     send_.bullet_speed = 27.f;  //referee.shoot_data_.bullet_speed
     send_.checksum = Get_CRC16_Check_Sum((uint8_t *)&send_, sizeof(send_packet) - 2, 0xffff);
 }

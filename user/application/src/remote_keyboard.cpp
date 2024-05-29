@@ -34,7 +34,7 @@
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 Flag flag;
-float ab,ac;
+float ab, ac;
 /* External variables --------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void PidFlagInit();
@@ -45,7 +45,7 @@ void TriggerBlockCheck();
 
 void ModeTask()
 {
-    ab =  shoot.trigger_speed_.GetMeasure();
+    ab = shoot.trigger_speed_.GetMeasure();
     ac = shoot.trigger_speed_.GetRef();
 
     // 键鼠模式摩擦轮控制，按F键切换摩擦轮状态，按R键切换自瞄状态
@@ -57,11 +57,46 @@ void ModeTask()
             if (ref_keymouse.referee_key_press[KEY_R] == 1) {
                 flag.return_trig_count++;
             }
+            if (ref_keymouse.referee_key_press[KEY_A] == 1) {
+                gimbal.yaw_modify -= 20.f;
+            }
+            if (ref_keymouse.referee_key_press[KEY_D] == 1) {
+                gimbal.yaw_modify += 20.f;
+            }
+            if (ref_keymouse.referee_key_press[KEY_W] == 1) {
+                gimbal.pitch_modify -= 2.f;
+            }
+            if (ref_keymouse.referee_key_press[KEY_S] == 1) {
+                gimbal.pitch_modify += 2.f;
+            }
             flag.last_key_press[i] = ref_keymouse.referee_key_press[i];
         }
         flag.auto_flag = ref_keymouse.comma_data.right_button_down;
         flag.trig_flag = ref_keymouse.comma_data.left_button_down;
     }  // 图传键鼠链路状态切换
+
+    // for (uint8_t i = 0; i < 16; i++) {
+    //     if (remote_key_press[i] != flag.last_key_press[i]) {
+    //         if (remote_key_press[KEY_F] == 1) {
+    //             flag.fric_flag = !flag.fric_flag;
+    //         }
+    //         if (remote_key_press[KEY_A] == 1) {
+    //             gimbal.yaw_modify -= 10.f;
+    //         }
+    //         if (remote_key_press[KEY_D] == 1) {
+    //             gimbal.yaw_modify += 10.f;
+    //         }
+    //         if (remote_key_press[KEY_W] == 1) {
+    //             gimbal.pitch_modify -= 1.f;
+    //         }
+    //         if (remote_key_press[KEY_S] == 1) {
+    //             gimbal.pitch_modify += 1.f;
+    //         }
+    //         flag.last_key_press[i] = remote_key_press[i];
+    //     }
+    //     flag.auto_flag = remote.GetPressR();
+    //     flag.trig_flag = remote.GetPressL();
+    // }  // 遥控器键鼠链路状态切换
 
     /*遥控器控制模式选择*/
     // 右拨杆在上，遥控器控制模式

@@ -47,6 +47,8 @@ class Gimbal
     float pitch_dmreal;
     float pitch_set_real;
     float pitch_err;
+    float yaw_modify;
+    float pitch_modify;
     /**
      * @brief Controls the gimbal system.
      */
