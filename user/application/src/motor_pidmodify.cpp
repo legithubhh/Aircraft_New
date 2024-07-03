@@ -57,7 +57,7 @@ void PidSetInitial()
      * Yaw轴3508电机的PID参数初始化
      */
     gimbal.yaw_angle.Init(30.f, 30.f, 2.5f, 1500.f * 1.f, 0.f);  // 输出限幅控制最大速度
-    gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 10000.f * 1.f, 0.f);
+    gimbal.yaw_speed.Init(80.f, 0.f, 2.5f, 10000.f * 1.f, 0.f);
 
     // gimbal.yaw_angle.Init(30.f, 30.f, 2.5f, 50.f * 1.f, 0.f);  // 输出限幅控制最大速度
     // gimbal.yaw_speed.Init(80.f, 0.f, 3.f, 3200.f * 1.f, 0.f);
@@ -144,13 +144,13 @@ void MotorStart()
 void RemoteAimingTargetSet()
 {
     // 摩擦轮目标值设置
-    gimbaltarget.friction_wheel_target = 120.f * 60.f;  // =6900 无减速箱，依据n*60得n转每秒 115.f * 60.f 摩擦轮温度足够高后达到30m/s射速
+    gimbaltarget.friction_wheel_target = 121.f * 60.f;  // =6900 无减速箱，依据n*60得n转每秒 115.f * 60.f 摩擦轮温度足够高后达到30m/s射速
     shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
 
     // 拨弹盘目标值设置
     /*35s支援时间，估计25s发弹时间，发弹量500，一转8发，62.5转，则预计比赛时速度需要62.5/25=2.5转/秒*/
     if (remote.GetS1() == 3) {
-        gimbaltarget.turn_magazine_target = 2.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
+        gimbaltarget.turn_magazine_target = 1.5f * 60.0f * 36.0f;  // =2430 依据减速比n*60*（36/1）得n转每秒
         shoot.SetTriggerSpeed(-gimbaltarget.turn_magazine_target);
     } else {
         gimbaltarget.turn_magazine_target = 0.f * 60.0f * 36.0f;
@@ -212,7 +212,7 @@ void KeymouseAimingTargetSet()
 {
     // 摩擦轮目标值设置
     if (flag.fric_flag == 1) {
-        gimbaltarget.friction_wheel_target = 120.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
+        gimbaltarget.friction_wheel_target = 121.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
         shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
     } else if (flag.fric_flag == 0) {
         gimbaltarget.friction_wheel_target = 0.f;
@@ -248,7 +248,7 @@ void KeymouseAimingTargetSet()
     }
 
     // Pitch轴目标值设置
-    pitch_target = remote.GetMouseY();
+    pitch_target = GetRefMouseY();
     if (pitch_target < 3.f && pitch_target > -3.f) {
         pitch_target = 0.f;
     }  // 死区设置，防止误漂移。
@@ -258,7 +258,7 @@ void KeymouseAimingTargetSet()
     gimbal.SetPitchPosition(-gimbaltarget.pitch_target);  // 陀螺仪向上为正，鼠标往下为正。前取负号，使得鼠标向上为正，抬头；符合操作习惯；
 
     // Yaw轴目标值设置
-    yaw_target = remote.GetMouseX();
+    yaw_target = GetRefMouseX();
     if (yaw_target < 3.f && yaw_target > -3.f) {
         yaw_target = 0.f;
     }
@@ -277,7 +277,7 @@ void AutoAimingTargetSet()
 {
     // 摩擦轮目标值设置
     if (flag.fric_flag == 1) {
-        gimbaltarget.friction_wheel_target = 120.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
+        gimbaltarget.friction_wheel_target = 121.f * 60.f;  // =6000 无减速箱，依据n*60得n转每秒
         shoot.SetFricSpeed(gimbaltarget.friction_wheel_target);
     } else if (flag.fric_flag == 0) {
         gimbaltarget.friction_wheel_target = 0.f;

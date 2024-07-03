@@ -19,6 +19,7 @@
 #include "ins.h"
 #include "remote_keyboard.h"
 #include "string.h"
+#include "gimbal.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private types -------------------------------------------------------------*/
@@ -139,8 +140,8 @@ void UITask()
 
     if (UI_PushUp_Counter % 191 == 0) {
         // P轴Y轴角度；
-        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll);
-        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.Yaw);
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll + gimbal.pitch_modify);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Add, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.YawTotalAngle + gimbal.yaw_modify);
         UI_PushUp_Graphs(2, &UI_Graph2[1]);
         vTaskDelay(15);
         UI_PushUp_Counter++;
@@ -190,8 +191,8 @@ void UITask()
     }
 
     if (UI_PushUp_Counter % 37 == 0) {
-        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll);
-        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.Yaw);
+        Float_Draw(&UI_Graph2[1].imageData[0], (char *)"205", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 712, INS.Roll + gimbal.pitch_modify);
+        Float_Draw(&UI_Graph2[1].imageData[1], (char *)"206", UI_Graph_Change, 2, UI_Color_Orange, 18, 2, 3, 1510, 659, INS.YawTotalAngle + gimbal.yaw_modify);
         UI_PushUp_Graphs(2, &UI_Graph2[1]);
         vTaskDelay(15);
         UI_PushUp_Counter++;

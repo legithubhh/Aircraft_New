@@ -17,6 +17,7 @@
  * s1:3       s2:2        自瞄测试模式：摩擦轮速度设为0，拨弹盘速度设为0，自瞄跟随目标
  * s1:2       s2:2        急停模式：摩擦轮，拨弹盘，双轴输出都发0
  * 键鼠控制按键：F键开关摩擦轮，R键进行退弹，鼠标左键开关拨弹盘，鼠标右键开关自瞄模式
+ * 云台PY零点偏移：W向上1度，S向下2度，A向左20度，D向右20度
  *******************************************************************************
  *  Copyright (c) 2024 Reborn Team, USTB.
  *  All Rights Reserved.
@@ -64,7 +65,7 @@ void ModeTask()
                 gimbal.yaw_modify += 20.f;
             }
             if (ref_keymouse.referee_key_press[KEY_W] == 1) {
-                gimbal.pitch_modify -= 2.f;
+                gimbal.pitch_modify -= 1.f;
             }
             if (ref_keymouse.referee_key_press[KEY_S] == 1) {
                 gimbal.pitch_modify += 2.f;
